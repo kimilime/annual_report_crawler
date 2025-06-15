@@ -2,4 +2,8 @@ requests>=2.25.0
 selenium>=4.0.0
 webdriver-manager>=3.8.0
 pathlib
-argparse 
+argparse
+beautifulsoup4>=4.9.0
+pdfkit>=1.0.0
+weasyprint>=54.0
+flask>=2.0.0 

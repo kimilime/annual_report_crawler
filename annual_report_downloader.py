@@ -1817,9 +1817,24 @@ class AnnualReportDownloader:
 
                                                 
 
+                                                # 尝试获取股票名称（从标题中提取）
+                                                company_name = stock_code  # 默认使用股票代码
+                                                try:
+                                                    # 从标题中提取公司名称
+                                                    if "：" in title:
+                                                        company_name = title.split("：")[0].strip()
+                                                    elif title.startswith("关于"):
+                                                        # 处理"关于XXX公司"格式
+                                                        parts = title.split("年度报告")
+                                                        if len(parts) > 0:
+                                                            name_part = parts[0].replace("关于", "").replace(f"{year}", "").strip()
+                                                            if name_part:
+                                                                company_name = name_part
+                                                except:
+                                                    pass
+                                                
                                                 # 构造文件名
-
-                                                filename = f"{stock_code}_{year}年报.pdf"
+                                                filename = f"{stock_code}_{company_name}_{year}年报.pdf"
 
                                                 
 
@@ -2023,7 +2038,24 @@ class AnnualReportDownloader:
                                                             org_id_param = query_params['orgId'][0]
                                                             
                                                             pdf_url = f"http://static.cninfo.com.cn/finalpage/{announcement_id}.PDF"
-                                                            filename = f"{stock_code}_{year}年年度报告.pdf"
+                                                            
+                                                            # 尝试获取股票名称（从标题中提取）
+                                                            company_name = stock_code  # 默认使用股票代码
+                                                            try:
+                                                                # 从标题中提取公司名称
+                                                                if "：" in title:
+                                                                    company_name = title.split("：")[0].strip()
+                                                                elif title.startswith("关于"):
+                                                                    # 处理"关于XXX公司"格式
+                                                                    parts = title.split("年度报告")
+                                                                    if len(parts) > 0:
+                                                                        name_part = parts[0].replace("关于", "").replace(f"{year}", "").strip()
+                                                                        if name_part:
+                                                                            company_name = name_part
+                                                            except:
+                                                                pass
+                                                            
+                                                            filename = f"{stock_code}_{company_name}_{year}年报.pdf"
                                                             filepath = self.download_dir / filename
                                                             
                                                             if self.download_pdf(pdf_url, str(filepath)):
@@ -2079,14 +2111,7 @@ class AnnualReportDownloader:
                                 'status': 'not_found',
                                 'error': '未找到年报'
                             })
-                    else:
-                        print(f"    ✗ 未找到{stock_code} {year}年年报")
-                        results.append({
-                            'stock_code': stock_code,
-                            'year': year,
-                            'status': 'not_found',
-                            'error': '未找到年报'
-                        })
+                    # 如果found_report为True，说明已经找到并处理了，不需要再添加not_found记录
                 
                 except Exception as e:
                     print(f"🔄 搜索过程出错: {e}")
@@ -2324,7 +2349,13 @@ class AnnualReportDownloader:
                             matched_year = None
                             if (('年度报告' in clean_title or '年报' in clean_title or '企业年度报告' in clean_title) and
                                 '半年' not in clean_title and  # 排除半年报
-                                '摘要' not in clean_title):   # 排除摘要
+                                '摘要' not in clean_title and  # 排除摘要
+                                '通知信函' not in clean_title and  # 排除通知信函
+                                '通告' not in clean_title and  # 排除通告
+                                '通函' not in clean_title and  # 排除通函
+                                '刊发通知' not in clean_title and  # 排除刊发通知
+                                '代表委任表格' not in clean_title and  # 排除代表委任表格
+                                '股东周年大会' not in clean_title):  # 排除股东大会相关
                                 matched_year = enhanced_year_matching(clean_title, years)
                             
                             if matched_year and matched_year not in found_reports:
@@ -2706,6 +2737,11 @@ class AnnualReportDownloader:
 
         print(f"\n📁 下载文件保存目录 {self.download_dir.absolute()}")
 
+        print("="*60)
+        print("  Annual Report Crawler - Developed by Terence WANG")
+        print("="*60)
+        print()
+
     def download_us_stock_10k_reports(self, stock_symbol, years):
         """
         下载美股10-K年报
@@ -2715,7 +2751,7 @@ class AnnualReportDownloader:
             years (list): 年份列表，如 [2023, 2022, 2021]
         
         Returns:
-            dict: 下载结果统计
+            List[Dict]: 下载结果列表，与其他函数格式一致
         """
         print(f"\n🇺🇸 开始下载美股 {stock_symbol} 的10-K年报...")
         
@@ -2725,21 +2761,24 @@ class AnnualReportDownloader:
             os.makedirs(us_folder)
             print(f"    📁 创建US文件夹: {us_folder}")
         
-        results = {
-            'total_requested': len(years),
-            'successful_downloads': 0,
-            'failed_downloads': 0,
-            'downloaded_files': [],
-            'failed_years': []
-        }
+        results = []  # 改为列表格式，与其他函数保持一致
+        successful_downloads = 0
+        failed_downloads = 0
         
         try:
             # 第一步：获取公司CIK
             cik = self._get_us_stock_cik(stock_symbol)
             if not cik:
                 print(f"    ❌ 无法找到股票代码 {stock_symbol} 对应的CIK")
-                results['failed_downloads'] = len(years)
-                results['failed_years'] = years
+                # 为每个年份创建失败记录
+                for year in years:
+                    results.append({
+                        'stock_code': stock_symbol,
+                        'year': year,
+                        'status': 'failed',
+                        'error': f'无法找到股票代码 {stock_symbol} 对应的CIK',
+                        'filename': None
+                    })
                 return results
             
             print(f"    ✓ 找到CIK: {cik}")
@@ -2748,65 +2787,113 @@ class AnnualReportDownloader:
             filings = self._get_us_10k_filings(cik, years)
             if not filings:
                 print(f"    ❌ 未找到任何10-K报告")
-                results['failed_downloads'] = len(years)
-                results['failed_years'] = years
+                for year in years:
+                    results.append({
+                        'stock_code': stock_symbol,
+                        'year': year,
+                        'status': 'failed',
+                        'error': '未找到任何10-K报告',
+                        'filename': None
+                    })
                 return results
             
             print(f"    ✓ 找到 {len(filings)} 个10-K报告")
             
+            # 为每个请求的年份创建结果记录
+            filing_dict = {filing['year']: filing for filing in filings}
+            
             # 第三步：下载每个年报
-            for filing in filings:
-                try:
-                    year = filing['year']
-                    filing_date = filing['filing_date']
-                    document_url = filing['document_url']
-                    
-                    print(f"    📄 下载 {year} 年10-K报告...")
-                    
-                    # 下载HTML内容
-                    html_content = self._download_us_filing_content(document_url)
-                    if not html_content:
-                        print(f"    ❌ {year} 年报下载失败")
-                        results['failed_downloads'] += 1
-                        results['failed_years'].append(year)
-                        continue
-                    
-                    # 保存文件
-                    filename = f"{stock_symbol}_{year}_10K_{filing_date}.pdf"
-                    filepath = os.path.join(us_folder, filename)
-                    
-                    # 转换为PDF并保存
-                    success = self._save_us_filing_as_pdf(html_content, filepath, stock_symbol, year)
-                    
-                    if success:
-                        print(f"    ✅ {year} 年报下载成功: {filename}")
-                        results['successful_downloads'] += 1
-                        results['downloaded_files'].append(filename)
-                    else:
-                        print(f"    ❌ {year} 年报保存失败")
-                        results['failed_downloads'] += 1
-                        results['failed_years'].append(year)
+            for year in years:
+                if year in filing_dict:
+                    filing = filing_dict[year]
+                    try:
+                        filing_date = filing['filing_date']
+                        document_url = filing['document_url']
                         
-                    # 添加延迟避免请求过快
-                    time.sleep(0.5)
-                    
-                except Exception as e:
-                    print(f"    ❌ {filing.get('year', '未知')} 年报处理失败: {str(e)}")
-                    results['failed_downloads'] += 1
-                    if 'year' in filing:
-                        results['failed_years'].append(filing['year'])
+                        print(f"    📄 下载 {year} 年10-K报告...")
+                        
+                        # 下载HTML内容
+                        html_content = self._download_us_filing_content(document_url)
+                        if not html_content:
+                            print(f"    ❌ {year} 年报下载失败")
+                            results.append({
+                                'stock_code': stock_symbol,
+                                'year': year,
+                                'status': 'failed',
+                                'error': '文档内容下载失败',
+                                'filename': None
+                            })
+                            failed_downloads += 1
+                            continue
+                        
+                        # 保存文件（HTML格式）
+                        filename = f"{stock_symbol}_{year}_10K_{filing_date}.html"
+                        filepath = os.path.join(us_folder, filename)
+                        
+                        # 直接保存为HTML
+                        success = self._save_us_filing_as_html(html_content, filepath, stock_symbol, year)
+                        
+                        if success:
+                            print(f"    ✅ {year} 年报下载成功: {filename}")
+                            results.append({
+                                'stock_code': stock_symbol,
+                                'year': year,
+                                'status': 'success',
+                                'error': None,
+                                'filename': filename
+                            })
+                            successful_downloads += 1
+                        else:
+                            print(f"    ❌ {year} 年报保存失败")
+                            results.append({
+                                'stock_code': stock_symbol,
+                                'year': year,
+                                'status': 'failed',
+                                'error': '文件保存失败',
+                                'filename': None
+                            })
+                            failed_downloads += 1
+                            
+                        # 添加延迟避免请求过快
+                        time.sleep(0.5)
+                        
+                    except Exception as e:
+                        print(f"    ❌ {year} 年报处理失败: {str(e)}")
+                        results.append({
+                            'stock_code': stock_symbol,
+                            'year': year,
+                            'status': 'failed',
+                            'error': str(e),
+                            'filename': None
+                        })
+                        failed_downloads += 1
+                else:
+                    # 未找到该年份的报告
+                    results.append({
+                        'stock_code': stock_symbol,
+                        'year': year,
+                        'status': 'failed',
+                        'error': f'未找到 {year} 年的10-K报告',
+                        'filename': None
+                    })
+                    failed_downloads += 1
             
         except Exception as e:
             print(f"    ❌ 下载过程中发生错误: {str(e)}")
-            results['failed_downloads'] = len(years)
-            results['failed_years'] = years
+            for year in years:
+                results.append({
+                    'stock_code': stock_symbol,
+                    'year': year,
+                    'status': 'failed',
+                    'error': str(e),
+                    'filename': None
+                })
+            failed_downloads = len(years)
         
         # 输出结果统计
         print(f"\n📊 美股 {stock_symbol} 10-K年报下载完成:")
-        print(f"    ✅ 成功下载: {results['successful_downloads']} 个")
-        print(f"    ❌ 下载失败: {results['failed_downloads']} 个")
-        if results['failed_years']:
-            print(f"    失败年份: {results['failed_years']}")
+        print(f"    ✅ 成功下载: {successful_downloads} 个")
+        print(f"    ❌ 下载失败: {failed_downloads} 个")
         
         return results
     
@@ -2910,6 +2997,50 @@ class AnnualReportDownloader:
             print(f"    ⚠️ 下载文档内容时出错: {str(e)}")
             return None
     
+    def _save_us_filing_as_html(self, html_content, filepath, stock_symbol, year):
+        """将HTML内容保存为HTML文件"""
+        try:
+            # 清理HTML内容
+            cleaned_html = self._clean_html_for_pdf(html_content)
+            
+            # 添加基本样式
+            styled_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>{stock_symbol} {year} 10-K Annual Report</title>
+                <style>
+                    body {{ font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }}
+                    .header {{ text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 10px; }}
+                    .content {{ max-width: 100%; }}
+                    table {{ border-collapse: collapse; width: 100%; margin: 10px 0; }}
+                    th, td {{ border: 1px solid #ddd; padding: 8px; text-align: left; }}
+                    th {{ background-color: #f2f2f2; }}
+                    .page-break {{ page-break-before: always; }}
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h1>{stock_symbol} - 10-K Annual Report ({year})</h1>
+                    <p>Downloaded from SEC EDGAR Database</p>
+                </div>
+                <div class="content">
+                    {cleaned_html}
+                </div>
+            </body>
+            </html>
+            """
+            
+            # 直接保存为HTML文件
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(styled_html)
+            return True
+                    
+        except Exception as e:
+            print(f"    ⚠️ 保存HTML时出错: {str(e)}")
+            return False
+
     def _save_us_filing_as_pdf(self, html_content, filepath, stock_symbol, year):
         """将HTML内容保存为PDF"""
         try:
@@ -2949,6 +3080,9 @@ class AnnualReportDownloader:
             try:
                 import pdfkit
                 
+                # 配置wkhtmltopdf路径（Windows）
+                config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+                
                 options = {
                     'page-size': 'A4',
                     'margin-top': '0.75in',
@@ -2960,7 +3094,7 @@ class AnnualReportDownloader:
                     'enable-local-file-access': None
                 }
                 
-                pdfkit.from_string(styled_html, filepath, options=options)
+                pdfkit.from_string(styled_html, filepath, options=options, configuration=config)
                 return True
                 
             except ImportError:
@@ -3162,55 +3296,46 @@ def parse_year_range(year_str: str) -> List[int]:
 
 
 def load_stock_codes_from_file(filepath: str) -> List[str]:
-
     """
-
     从文件加载股票代码列表
-
     
-
     Args:
-
         filepath: 文件路径
-
         
-
     Returns:
-
         股票代码列表
-
     """
-
     stock_codes = []
-
     
-
     try:
-
-        with open(filepath, 'r', encoding='utf-8') as f:
-
-            for line in f:
-
-                code = line.strip()
-
-                if code and not code.startswith('#'):  # 跳过空行和注释
-
-                    stock_codes.append(code)
-
+        # 尝试多种编码方式
+        encodings = ['utf-8', 'utf-8-sig', 'gbk', 'gb2312']
+        content = None
+        used_encoding = None
         
-
-        print(f"🔄 从文件{filepath} 加载了{len(stock_codes)} 个股票代码")
-
+        for encoding in encodings:
+            try:
+                with open(filepath, 'r', encoding=encoding) as f:
+                    content = f.read()
+                used_encoding = encoding
+                break
+            except UnicodeDecodeError:
+                continue
         
-
+        if content is None:
+            raise Exception("无法解码文件，尝试了多种编码方式")
+        
+        for line in content.splitlines():
+            code = line.strip()
+            if code and not code.startswith('#'):  # 跳过空行和注释
+                stock_codes.append(code)
+        
+        print(f"🔄 从文件{filepath} 加载了{len(stock_codes)} 个股票代码 (编码: {used_encoding})")
+        
     except Exception as e:
-
         print(f"🔄 读取文件 {filepath} 失败: {e}")
-
         sys.exit(1)
-
     
-
     return stock_codes
 
 
@@ -3218,119 +3343,46 @@ def load_stock_codes_from_file(filepath: str) -> List[str]:
 
 
 def main():
-
-    """主函数"""
-
-    parser = argparse.ArgumentParser(
-
-        description="巨潮网年报下载器 - 支持A股主板、科创板、创业板和港股",
-
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-
-        epilog="""
-
-使用示例:
-
-  # 下载单个股票的年报
-
-  python annual_report_downloader.py -s 000001 -y 2022
-
-  
-
-  # 下载多个年份的年报
-
-  python annual_report_downloader.py -s 300750 -y 2020-2022
-
-  
-
-  # 从文件批量下载
-
-  python annual_report_downloader.py -f stocks.txt -y 2021,2022
-
-  
-
-  # 港股下载
-
-  python annual_report_downloader.py -s 00700 -y 2022
-
-  
-
-  # 指定下载目录
-
-  python annual_report_downloader.py -s 000001 -y 2022 -d ./downloads
-
-        """
-
-    )
-
+    # 打印欢迎信息
+    print("="*60)
+    print("  Annual Report Crawler - Developed by Terence WANG")
+    print("="*60)
     
-
+    parser = argparse.ArgumentParser(description="年报下载器，支持A股、港股和美股。")
+    
     # 添加参数
-
     group = parser.add_mutually_exclusive_group(required=True)
-
     group.add_argument('-s', '--stock', type=str, help='股票代码（A股6位代码或5位港股代码）')
-
     group.add_argument('-f', '--file', type=str, help='包含股票代码的文本文件路径')
-
     
-
     parser.add_argument('-y', '--years', type=str, required=True,
-
                        help='年份范围，支持格式 2020 | 2020-2022 | 2020,2021,2022')
-
     parser.add_argument('-d', '--dir', type=str, default='annual_reports',
-
                        help='下载目录 (默认: annual_reports)')
-
     
-
     args = parser.parse_args()
-
     
-
     # 解析年份
-
     try:
-
         years = parse_year_range(args.years)
-
         print(f"📅 目标年份: {years}")
-
     except Exception as e:
-
         print(f"🔄 年份格式错误: {e}")
-
         sys.exit(1)
-
     
-
     # 获取股票代码列表
-
     if args.stock:
-
         stock_codes = [args.stock]
-
     else:
-
         stock_codes = load_stock_codes_from_file(args.file)
-
     
-
     if not stock_codes:
-
         print("🔄 没有找到有效的股票代码")
-
         sys.exit(1)
-
     
-
     # 开始下载
-
     with AnnualReportDownloader(args.dir) as downloader:
-
         downloader.process_stock_list(stock_codes, years)
-
         downloader.print_summary()
 
 
