@@ -1,6 +1,6 @@
 @echo off
 echo ================================================================
-echo   Annual Report Crawler - Requests Version
+echo   Annual Report Crawler - Requests "Mizuki" Version
 echo ================================================================
 echo.
 
@@ -58,18 +58,19 @@ echo All dependencies checked
 echo.
 
 echo ================================================================
-echo Starting Requests Web App...
+echo Starting Requests "Mizuki" Version Web App...
 echo ================================================================
-echo Web interface: http://localhost:5000
-echo Version: Requests (Standard)
+echo Web interface: http://localhost:31015
+echo Version: Requests "Mizuki" Version
 echo Feature: Fast downloads using HTTP requests
 echo Note: Suitable for personal computers
+echo Note: Uses port 31015 to avoid conflict with Browser version (30331)
 echo Press Ctrl+C to stop server
 echo ================================================================
 echo.
 
 echo Opening browser in 3 seconds...
-start /b timeout /t 3 /nobreak >nul && start "" "http://localhost:5000"
+start /b timeout /t 3 /nobreak >nul && start "" "http://localhost:31015"
 
 python web_app_rq.py
 

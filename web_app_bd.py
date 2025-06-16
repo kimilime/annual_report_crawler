@@ -50,18 +50,22 @@ def download_worker(stock_codes, years, download_dir='annual_reports'):
     global downloader, download_status
     
     try:
+        # 重置状态
         download_status['running'] = True
         download_status['progress'] = 0
-        download_status['total'] = len(stock_codes)
         download_status['total_stocks'] = len(stock_codes)
         download_status['completed_stocks'] = 0
         download_status['logs'] = []
         download_status['results'] = []
         
-        log_message("🚀 开始批量下载年报...")
+        # 显示版本信息
+        log_message("============================================================")
+        log_message('Annual Report Crawler - Browser "Otako" Version')
+        log_message("============================================================")
+        
         log_message(f"📊 共 {len(stock_codes)} 只股票，{len(years)} 个年份")
         log_message(f"📁 下载目录: {download_dir}")
-        log_message("🌐 使用浏览器下载模式，避免文件加密")
+        log_message("🚀 开始批量下载...")
         
         # 创建下载器实例（使用无头模式）
         downloader = AnnualReportDownloader(download_dir, headless=True)
@@ -89,9 +93,20 @@ def download_worker(stock_codes, years, download_dir='annual_reports'):
                             'timestamp': datetime.now().strftime('%H:%M:%S')
                         })
                     else:
+                        # 构建更详细的错误信息
+                        stock_code = result.get('stock_code', stock_code)
+                        company_name = result.get('company_name', '')
+                        year = result.get('year', '')
+                        error_msg = result.get('error', '未知错误')
+                        
+                        if company_name:
+                            message = f"{stock_code} {company_name} {year}年: {error_msg}"
+                        else:
+                            message = f"{stock_code} {year}年: {error_msg}"
+                        
                         download_status['results'].append({
                             'status': 'error',
-                            'message': result.get('error', '未知错误'),
+                            'message': message,
                             'timestamp': datetime.now().strftime('%H:%M:%S')
                         })
                 
@@ -115,6 +130,11 @@ def download_worker(stock_codes, years, download_dir='annual_reports'):
         total_success = sum(1 for r in download_status['results'] if r['status'] == 'success')
         total_failed = len(download_status['results']) - total_success
         log_message(f"📊 总计: 成功 {total_success}, 失败 {total_failed}")
+        
+        # 显示结束版本信息
+        log_message("============================================================")
+        log_message('Annual Report Crawler - Browser "Otako" Version')
+        log_message("============================================================")
         
         # 更新最终状态
         download_status['progress'] = 100
@@ -282,13 +302,13 @@ def health_check():
 
 if __name__ == '__main__':
     print("=" * 60)
-    print("  年报下载器 - 浏览器下载版本 Web应用")
-    print("  Annual Report Crawler - Browser Download Web App")
+    print('  年报下载器 - Browser "Otako" Version Web应用')
+    print('  Annual Report Crawler - Browser "Otako" Version Web App')
     print("=" * 60)
-    print("🌐 Web界面: http://localhost:5001")
-    print("🔧 版本: 浏览器下载版 (Browser Download)")
+    print("🌐 Web界面: http://localhost:30331")
+    print('🔧 版本: Browser "Otako" Version')
     print("🚀 特性: 通过浏览器下载，避免文件加密")
-    print("💡 注意: BD版使用端口5001，避免与RQ版(5000)冲突")
+    print('💡 注意: Browser "Otako" Version使用端口30331，避免与Requests版本(31015)冲突')
     print("-" * 60)
     
-    app.run(debug=True, host='0.0.0.0', port=5001) 
+    app.run(debug=True, host='0.0.0.0', port=30331) 

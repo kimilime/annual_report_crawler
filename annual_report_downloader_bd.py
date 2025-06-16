@@ -85,18 +85,23 @@ def enhanced_year_matching(title: str, target_years: List[int]) -> Optional[int]
     Returns:
         匹配到的年份，如果未匹配返回None
     """
-    # 中文数字映射
+    # 先检查是否是应该排除的报告类型
+    if ('半年' in title or '半年度' in title or '中期' in title or 
+        '季度' in title or '季报' in title):
+        return None
+    
+    # 中文数字映射（包含大写和小写）
     chinese_digits = {
-        '0': ['〇', '零'],
-        '1': ['一'],
-        '2': ['二'], 
-        '3': ['三'],
-        '4': ['四'],
-        '5': ['五'],
-        '6': ['六'],
-        '7': ['七'],
-        '8': ['八'],
-        '9': ['九']
+        '0': ['〇', '零', 'O', 'o'],
+        '1': ['一', '壹'],
+        '2': ['二', '贰', '貳'], 
+        '3': ['三', '叁', '參'],
+        '4': ['四', '肆'],
+        '5': ['五', '伍'],
+        '6': ['六', '陆', '陸'],
+        '7': ['七', '柒'],
+        '8': ['八', '捌'],
+        '9': ['九', '玖']
     }
     
     for year in target_years:
@@ -121,6 +126,52 @@ def enhanced_year_matching(title: str, target_years: List[int]) -> Optional[int]
         
         if generate_chinese_patterns(year_str):
             return year
+    
+    return None
+
+
+def enhanced_year_matching_with_date(title: str, target_years: List[int], pub_date: str = None) -> Optional[int]:
+    """
+    带日期辅助的增强年份匹配函数
+    
+    Args:
+        title: 标题文本
+        target_years: 目标年份列表
+        pub_date: 发布日期 (格式如 "2025-04-23")
+        
+    Returns:
+        匹配到的年份，如果未匹配返回None
+    """
+    # 先尝试从标题中匹配年份
+    matched_year = enhanced_year_matching(title, target_years)
+    if matched_year:
+        return matched_year
+    
+    # 如果标题中没有年份，但标题确实是年报，尝试从发布日期推断
+    if pub_date and ('年报' in title or '年度报告' in title):
+        try:
+            # 处理发布日期（可能是字符串或整数时间戳）
+            if isinstance(pub_date, str) and '-' in pub_date:
+                # 字符串格式：YYYY-MM-DD
+                pub_year = int(pub_date.split('-')[0])
+            elif isinstance(pub_date, (int, float)):
+                # 时间戳格式，转换为年份
+                import datetime
+                pub_year = datetime.datetime.fromtimestamp(pub_date / 1000).year
+            else:
+                # 其他格式，无法处理
+                return None
+            
+            # 年报通常在次年发布，所以年报年份 = 发布年份 - 1
+            report_year = pub_year - 1
+            
+            # 检查推断的年份是否在目标年份中
+            if report_year in target_years:
+                print(f"    💡 通过日期推断年份: {pub_date} -> {report_year}年年报")
+                return report_year
+                
+        except (ValueError, IndexError, TypeError):
+            pass
     
     return None
 
@@ -2376,6 +2427,7 @@ class AnnualReportDownloader:
                 for year in years:
                     results.append({
                         'stock_code': stock_code,
+                        'company_name': None,
                         'year': year,
                         'status': 'company_not_found',
                         'error': '无法找到公司信息'
@@ -2393,17 +2445,20 @@ class AnnualReportDownloader:
                 'X-Requested-With': 'XMLHttpRequest'
             }
             
-            # 多种搜索策略
+            # 多种搜索策略（动态生成基于目标年份）
             search_strategies = [
                 (f"{company_name} 年度报告", "公司名+年度报告"),
                 (f"{company_name} 年报", "公司名+年报"),
                 (f"{found_code} 年度报告", "股票代码+年度报告"),
                 (f"{found_code} 年报", "股票代码+年报"),
-                (f"{company_name} 2021", "公司名+2021"),
-                (f"{company_name} 2022", "公司名+2022"),
-                (f"{found_code} 2021", "股票代码+2021"),
-                (f"{found_code} 2022", "股票代码+2022"),
             ]
+            
+            # 动态添加基于目标年份的搜索策略
+            for year in years:
+                search_strategies.extend([
+                    (f"{company_name} {year}", f"公司名+{year}"),
+                    (f"{found_code} {year}", f"股票代码+{year}"),
+                ])
             
             found_reports = {}
             
@@ -2475,10 +2530,12 @@ class AnnualReportDownloader:
                             # 清理HTML标签
                             clean_title = title.replace('<em>', '').replace('</em>', '')
                             
-                            # 使用增强的年份匹配逻辑
+                            # 使用增强的年份匹配逻辑（包含日期辅助）
                             matched_year = None
                             if (('年度报告' in clean_title or '年报' in clean_title or '企业年度报告' in clean_title) and
                                 '半年' not in clean_title and  # 排除半年报
+                                '半年度' not in clean_title and  # 排除半年度报告
+                                '中期' not in clean_title and  # 排除中期报告
                                 '摘要' not in clean_title and  # 排除摘要
                                 '通知信函' not in clean_title and  # 排除通知信函
                                 '通告' not in clean_title and  # 排除通告
@@ -2486,7 +2543,10 @@ class AnnualReportDownloader:
                                 '刊发通知' not in clean_title and  # 排除刊发通知
                                 '代表委任表格' not in clean_title and  # 排除代表委任表格
                                 '股东周年大会' not in clean_title):  # 排除股东大会相关
-                                matched_year = enhanced_year_matching(clean_title, years)
+                                
+                                # 获取发布日期用于辅助判断
+                                pub_date = ann.get('announcementTime', '')
+                                matched_year = enhanced_year_matching_with_date(clean_title, years, pub_date)
                             
                             if matched_year and matched_year not in found_reports:
                                 found_reports[matched_year] = {
@@ -2526,6 +2586,7 @@ class AnnualReportDownloader:
                             print(f"    ✓ 成功下载: {filename}")
                             results.append({
                                 'stock_code': stock_code,
+                                'company_name': company_name,
                                 'year': year,
                                 'status': 'success',
                                 'filename': filename,
@@ -2535,6 +2596,7 @@ class AnnualReportDownloader:
                             print(f"    ✗ 下载失败: {filename}")
                             results.append({
                                 'stock_code': stock_code,
+                                'company_name': company_name,
                                 'year': year,
                                 'status': 'download_failed',
                                 'error': 'PDF下载失败'
@@ -2543,6 +2605,7 @@ class AnnualReportDownloader:
                         print(f"    ✗ {year} 年报无PDF链接")
                         results.append({
                             'stock_code': stock_code,
+                            'company_name': company_name,
                             'year': year,
                             'status': 'no_pdf_link',
                             'error': '无PDF链接'
@@ -2551,6 +2614,7 @@ class AnnualReportDownloader:
                     print(f"    ✗ 未找到 {year} 年报")
                     results.append({
                         'stock_code': stock_code,
+                        'company_name': company_name,
                         'year': year,
                         'status': 'not_found',
                         'error': '未找到年报'
@@ -2563,6 +2627,7 @@ class AnnualReportDownloader:
             for year in years:
                 results.append({
                     'stock_code': stock_code,
+                    'company_name': None,
                     'year': year,
                     'status': 'error',
                     'error': str(e)
@@ -2815,6 +2880,8 @@ class AnnualReportDownloader:
 
                     'stock_code': detail.get('stock_code', ''),
 
+                    'company_name': detail.get('company_name', ''),
+
                     'year': detail.get('year', ''),
 
                     'status': status,
@@ -2867,17 +2934,35 @@ class AnnualReportDownloader:
 
                 for failure in failures:
 
-                    stock_year = f"{failure['stock_code']} {failure['year']}"
+                    stock_code = failure['stock_code']
+
+                    company_name = failure.get('company_name', '')
+
+                    year = failure['year']
+
+                    
+
+                    # 构建显示字符串：股票代码 + 公司名称（如果有）+ 年份
+
+                    if company_name:
+
+                        stock_info = f"{stock_code} {company_name} {year}年"
+
+                    else:
+
+                        stock_info = f"{stock_code} {year}年"
+
+                    
 
                     error_msg = failure['error']
 
                     if failure.get('title'):
 
-                        print(f"  {stock_year}: {error_msg} (找到标题: {failure['title'][:50]}...)")
+                        print(f"  {stock_info}: {error_msg} (找到标题: {failure['title'][:50]}...)")
 
                     else:
 
-                        print(f"  {stock_year}: {error_msg}")
+                        print(f"  {stock_info}: {error_msg}")
 
         
 
@@ -2902,7 +2987,8 @@ class AnnualReportDownloader:
         print(f"\n📁 下载文件保存目录 {self.download_dir.absolute()}")
 
         print("="*60)
-        print("  Annual Report Crawler - Developed by Terence WANG")
+        print('  Annual Report Crawler - Browser "Otako" Version')
+        print("  Developed by Terence WANG")
         print("="*60)
         print()
 
@@ -3340,16 +3426,16 @@ class AnnualReportDownloader:
         
         # 2. 中文数字映射
         chinese_digits = {
-            '0': ['〇', '零'],
-            '1': ['一'],
-            '2': ['二'],
-            '3': ['三'],
-            '4': ['四'],
-            '5': ['五'],
-            '6': ['六'],
-            '7': ['七'],
-            '8': ['八'],
-            '9': ['九']
+            '0': ['〇', '零', 'O', 'o'],
+            '1': ['一', '壹'],
+            '2': ['二', '贰', '貳'],
+            '3': ['三', '叁', '參'],
+            '4': ['四', '肆'],
+            '5': ['五', '伍'],
+            '6': ['六', '陆', '陸'],
+            '7': ['七', '柒'],
+            '8': ['八', '捌'],
+            '9': ['九', '玖']
         }
         
         def generate_chinese_patterns(year_str):
@@ -3512,7 +3598,8 @@ def load_stock_codes_from_file(filepath: str) -> List[str]:
 def main():
     # 打印欢迎信息
     print("="*60)
-    print("  Annual Report Crawler - Developed by Terence WANG")
+    print('  Annual Report Crawler - Browser "Otako" Version')
+    print("  Developed by Terence WANG")
     print("="*60)
     
     parser = argparse.ArgumentParser(description="年报下载器，支持A股、港股和美股。")
@@ -3560,3 +3647,4 @@ if __name__ == "__main__":
 
     main()
 
+ 

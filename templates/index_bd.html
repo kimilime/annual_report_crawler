@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annual Report Crawler - Browser Download</title>
+    <title>Annual Report Crawler - Browser "Otako" Version</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #f5f0ff; /* Very Light Violet Tint */
             min-height: 100vh;
             padding: 20px;
         }
@@ -28,7 +28,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #c44569 0%, #8e44ad 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -143,7 +143,7 @@
 
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #c44569;
         }
 
         .form-group textarea {
@@ -160,8 +160,8 @@
             flex: 1;
         }
 
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-wrapper .btn {
+            background: linear-gradient(135deg, #c44569 0%, #8e44ad 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -173,22 +173,22 @@
             margin-right: 10px;
         }
 
-        .btn:hover {
+        .btn-wrapper .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(196, 69, 105, 0.4);
         }
 
-        .btn:disabled {
+        .btn-wrapper .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
 
-        .btn.secondary {
+        .btn-wrapper .btn.secondary {
             background: #6c757d;
         }
 
-        .btn.secondary:hover {
+        .btn-wrapper .btn.secondary:hover {
             box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
         }
 
@@ -211,7 +211,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #c44569 0%, #8e44ad 100%);
             width: 0%;
             transition: width 0.3s;
         }
@@ -263,6 +263,39 @@
             border-left-color: #dc3545;
         }
 
+        .results-stats {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .results-stats span {
+            font-weight: 600;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 6px;
+        }
+
+        .success-stat {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .failed-stat {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .total-stat {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
         .result-item .download-btn {
             background: #28a745;
             color: white;
@@ -281,7 +314,7 @@
         }
 
         .help-section h3 {
-            color: #0066cc;
+            color: #87085f;
             margin-bottom: 15px;
         }
 
@@ -298,7 +331,7 @@
 
         .help-section li:before {
             content: "•";
-            color: #0066cc;
+            color: #87085f;
             position: absolute;
             left: 0;
         }
@@ -318,6 +351,10 @@
             display: none;
         }
 
+        .files-section h2 {
+            margin-bottom: 20px;
+        }
+
         .file-item {
             background: white;
             padding: 15px;
@@ -326,7 +363,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #c44569;
         }
 
         .file-info {
@@ -361,10 +398,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="badge">🌐 Browser Download</div>
+            <div class="badge">🌐 Browser "Otako" Version</div>
             <a href="/readme" class="nav-link" target="_blank">📖 查看完整文档</a>
             <h1>📊 Annual Report Crawler</h1>
-            <p>Browser Download Version - Developed by Terence WANG</p>
+            <p>Developed by Terence WANG</p>
         </div>
 
         <div class="content">
@@ -418,8 +455,6 @@
                     </div>
 
                     <button type="submit" class="btn" id="downloadBtn">🚀 开始下载</button>
-                    <button type="button" class="btn secondary" id="clearLogsBtn">🗑️ 清空日志</button>
-                    <button type="button" class="btn secondary" id="refreshFilesBtn">📁 刷新文件列表</button>
                 </form>
             </div>
 
@@ -436,6 +471,10 @@
                 <div class="progress-info">
                     <span id="currentStock">-</span>
                     <span id="stockCount">0/0</span>
+                </div>
+                <!-- 统计信息 -->
+                <div class="statistics-bar" id="statisticsBar" style="display: none; margin-top: 15px; padding: 10px; background: white; border-radius: 8px; font-weight: 600;">
+                    <span id="statsText" style="color: #333;"></span>
                 </div>
             </div>
 
@@ -459,7 +498,7 @@
         </div>
 
         <div class="footer">
-            <p>&copy; 2025 Annual Report Crawler - Browser Download Version</p>
+            <p>&copy; 2025 Annual Report Crawler - Browser "Otako" Version</p>
             <p>Developed by Terence WANG | 🌐 所有下载通过浏览器完成，避免文件加密</p>
         </div>
     </div>
@@ -480,12 +519,6 @@
                 e.preventDefault();
                 startDownload();
             });
-
-            // 清空日志
-            document.getElementById('clearLogsBtn').addEventListener('click', clearLogs);
-
-            // 刷新文件列表
-            document.getElementById('refreshFilesBtn').addEventListener('click', refreshFilesList);
         }
 
         // 开始下载
@@ -560,7 +593,20 @@
                         logsContainer.scrollTop = logsContainer.scrollHeight;
                     }
 
-                    // 更新结果
+                    // 更新统计信息（显示在进度条下面）
+                    if (data.results.length > 0) {
+                        const successCount = data.results.filter(r => r.status === 'success').length;
+                        const errorCount = data.results.filter(r => r.status === 'error').length;
+                        const totalCount = successCount + errorCount;
+                        
+                        document.getElementById('statisticsBar').style.display = 'block';
+                        document.getElementById('statsText').innerHTML = 
+                            `<span style="color: #28a745;">✅ 成功: ${successCount}</span> ` +
+                            `<span style="color: #dc3545;">❌ 失败: ${errorCount}</span> ` +
+                            `<span style="color: #6c757d;">📊 总计: ${successCount}/${totalCount}</span>`;
+                    }
+
+                    // 更新结果（不再显示统计信息）
                     const resultsContainer = document.getElementById('resultsContainer');
                     if (data.results.length > 0) {
                         resultsContainer.innerHTML = data.results.map(result => {
@@ -594,22 +640,6 @@
                 .catch(error => {
                     console.error('更新状态失败:', error);
                 });
-        }
-
-        // 清空日志
-        function clearLogs() {
-            fetch('/clear_logs', {
-                method: 'POST'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.getElementById('logsContainer').innerHTML = '';
-                }
-            })
-            .catch(error => {
-                console.error('清空日志失败:', error);
-            });
         }
 
         // 刷新文件列表

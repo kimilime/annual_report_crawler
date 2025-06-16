@@ -60,6 +60,29 @@ def run_downloader_direct(stock_codes, years, download_dir):
         # 直接导入并调用下载器
         from annual_report_downloader_rq import AnnualReportDownloader
         
+        # 显示版本信息
+        download_status['logs'].append({
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'message': '============================================================'
+        })
+        download_status['logs'].append({
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'message': 'Annual Report Crawler - Requests "Mizuki" Version'
+        })
+        download_status['logs'].append({
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'message': 'Developed by Terence WANG'
+        })
+        download_status['logs'].append({
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'message': '============================================================'
+        })
+        
+        download_status['logs'].append({
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'message': f'📁 下载目录: {Path(download_dir).absolute()}'
+        })
+        
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
             'message': f'📅 目标年份: {years}'
@@ -68,11 +91,6 @@ def run_downloader_direct(stock_codes, years, download_dir):
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
             'message': f'🚀 开始批量下载，共{len(stock_codes)} 只股票，{len(years)} 个年份'
-        })
-        
-        download_status['logs'].append({
-            'timestamp': datetime.now().strftime('%H:%M:%S'),
-            'message': f'📁 下载目录: {Path(download_dir).absolute()}'
         })
         
         download_status['logs'].append({
@@ -118,13 +136,22 @@ def run_downloader_direct(stock_codes, years, download_dir):
                         })
                     else:
                         error_msg = result.get('error', '未知错误')
+                        year = result.get('year', '')
+                        company_name = result.get('company_name', '')
+                        
+                        # 格式化错误信息：股票代码 公司名称 年份: 错误信息
+                        if company_name:
+                            error_display = f"{stock_code} {company_name} {year}: {error_msg}"
+                        else:
+                            error_display = f"{stock_code} {year}: {error_msg}"
+                        
                         download_status['logs'].append({
                             'timestamp': datetime.now().strftime('%H:%M:%S'),
-                            'message': f'    ✗ 下载失败: {error_msg}'
+                            'message': f'    ✗ {error_display}'
                         })
                         download_status['results'].append({
                             'status': 'error',
-                            'message': f'    ✗ 下载失败: {error_msg}',
+                            'message': f'    ✗ {error_display}',
                             'timestamp': datetime.now().strftime('%H:%M:%S')
                         })
         
@@ -135,15 +162,25 @@ def run_downloader_direct(stock_codes, years, download_dir):
         
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
-            'message': '='*60
-        })
-        download_status['logs'].append({
-            'timestamp': datetime.now().strftime('%H:%M:%S'),
             'message': '📈 下载完成！'
         })
+        
+        # 显示结束版本信息
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
-            'message': '='*60
+            'message': '============================================================'
+        })
+        download_status['logs'].append({
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'message': 'Annual Report Crawler - Requests "Mizuki" Version'
+        })
+        download_status['logs'].append({
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'message': 'Developed by Terence WANG'
+        })
+        download_status['logs'].append({
+            'timestamp': datetime.now().strftime('%H:%M:%S'),
+            'message': '============================================================'
         })
             
     except Exception as e:
@@ -212,6 +249,34 @@ def download_file(filename):
     
     return jsonify({'error': '文件未找到'}), 404
 
+@app.route('/list_files')
+def list_files():
+    """列出下载的文件"""
+    try:
+        # 获取当前下载目录
+        download_dir = Path(download_status.get('download_dir', 'annual_reports'))
+        
+        if not download_dir.exists():
+            return jsonify({'files': []})
+        
+        files = []
+        for file_path in download_dir.rglob("*"):
+            if file_path.is_file():
+                relative_path = file_path.relative_to(download_dir)
+                files.append({
+                    'name': file_path.name,
+                    'path': str(relative_path),
+                    'size': file_path.stat().st_size,
+                    'modified': file_path.stat().st_mtime * 1000  # 转换为毫秒时间戳
+                })
+        
+        # 按修改时间排序
+        files.sort(key=lambda x: x['modified'], reverse=True)
+        return jsonify({'files': files})
+        
+    except Exception as e:
+        return jsonify({'files': [], 'error': str(e)})
+
 @app.route('/readme')
 def readme():
     """提供README.html文件访问"""
@@ -222,12 +287,14 @@ def readme():
 
 if __name__ == '__main__':
     print("="*60)
-    print("  Annual Report Crawler Web Interface (Simplified)")
+    print('  Annual Report Crawler - Requests "Mizuki" Version Web App')
     print("  Developed by Terence WANG")
     print("="*60)
     print("🌐 启动Web服务器...")
-    print("📱 请在浏览器中访问: http://localhost:5000")
+    print("📱 请在浏览器中访问: http://localhost:31015")
+    print('🔧 版本: Requests "Mizuki" Version')
+    print('💡 注意: Requests "Mizuki" Version使用端口31015，避免与Browser版本(30331)冲突')
     print("🛑 按 Ctrl+C 停止服务器")
     print("="*60)
     
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    app.run(debug=True, host='0.0.0.0', port=31015) 

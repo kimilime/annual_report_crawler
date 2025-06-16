@@ -1,6 +1,6 @@
 @echo off
 echo ================================================================
-echo   Annual Report Crawler - Browser Download Version
+echo   Annual Report Crawler - Browser "Otako" Version
 echo ================================================================
 echo.
 
@@ -67,19 +67,19 @@ echo All dependencies checked
 echo.
 
 echo ================================================================
-echo Starting Browser Download Web App...
+echo Starting Browser "Otako" Version Web App...
 echo ================================================================
-echo Web interface: http://localhost:5001
-echo Version: Browser Download
+echo Web interface: http://localhost:30331
+echo Version: Browser "Otako" Version
 echo Feature: Download via browser to avoid file encryption
 echo Note: Downloads use headless browser mode
-echo Note: Uses port 5001 to avoid conflict with RQ version (5000)
+echo Note: Uses port 30331 to avoid conflict with Requests version (31015)
 echo Press Ctrl+C to stop server
 echo ================================================================
 echo.
 
 echo Opening browser in 3 seconds...
-start /b timeout /t 3 /nobreak >nul && start "" "http://localhost:5001"
+start /b timeout /t 3 /nobreak >nul && start "" "http://localhost:30331"
 
 python web_app_bd.py
 
