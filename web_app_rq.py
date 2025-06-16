@@ -58,7 +58,7 @@ def run_downloader_direct(stock_codes, years, download_dir):
         })
         
         # 直接导入并调用下载器
-        from annual_report_downloader import AnnualReportDownloader
+        from annual_report_downloader_rq import AnnualReportDownloader
         
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
@@ -161,7 +161,7 @@ def run_downloader_direct(stock_codes, years, download_dir):
 @app.route('/')
 def index():
     """首页"""
-    return render_template('index.html')
+    return render_template('index_rq.html')
 
 @app.route('/api/download', methods=['POST'])
 def start_download():

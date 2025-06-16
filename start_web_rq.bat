@@ -71,7 +71,7 @@ echo.
 echo Opening browser in 3 seconds...
 start /b timeout /t 3 /nobreak >nul && start "" "http://localhost:5000"
 
-python web_app_simple.py
+python web_app_rq.py
 
 REM 等待用户按键停止服务器
 echo.

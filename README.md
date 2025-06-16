@@ -23,7 +23,7 @@
 
 **使用方式**:
 - 双击运行 `start_web_rq.bat` 
-- 或命令行 `python annual_report_downloader.py`
+- 或命令行 `python annual_report_downloader_rq.py`
 
 ## 核心功能
 
@@ -94,7 +94,7 @@
 
 1.  **启动服务**:
     - **Windows**: 直接双击运行 `start_web_rq.bat` 批处理文件。
-    - **手动**: `python web_app_simple.py`
+    - **手动**: `python web_app_rq.py`
 2.  **访问界面**:
     - 脚本启动后，会自动在默认浏览器中打开 `http://localhost:5000`。
     - 您也可以在局域网内的其他设备（如手机、平板）上通过 `http://[运行电脑的IP地址]:5000` 来访问。
@@ -119,7 +119,7 @@
 
 #### 命令格式
 ```bash
-python annual_report_downloader.py [-h] (-s STOCK | -f FILE) -y YEARS [-d DIR]
+python annual_report_downloader_rq.py [-h] (-s STOCK | -f FILE) -y YEARS [-d DIR]
 ```
 
 #### 参数详解
@@ -135,13 +135,13 @@ python annual_report_downloader.py [-h] (-s STOCK | -f FILE) -y YEARS [-d DIR]
 
 ```bash
 # 下载平安银行2024年年报
-python annual_report_downloader.py -s 000001 -y 2024
+python annual_report_downloader_rq.py -s 000001 -y 2024
 
 # 下载宁德时代2022至2024的年报
-python annual_report_downloader.py -s 300750 -y 2022-2024
+python annual_report_downloader_rq.py -s 300750 -y 2022-2024
 
 # 批量下载文件中的所有股票的2024年报
-python annual_report_downloader.py -f all_types_test_stocks.txt -y 2024
+python annual_report_downloader_rq.py -f all_types_test_stocks.txt -y 2024
 ```
 
 ---
@@ -187,8 +187,8 @@ annual_report_crawler/
 │   ├── start_web_bd.bat               # 浏览器版本启动脚本
 │   └── test_browser_download.py       # 浏览器版本测试脚本
 ├── 📊 标准版本
-│   ├── annual_report_downloader.py    # 标准版本主程序（命令行版本）
-│   ├── web_app_simple.py             # 标准版本Web界面应用
+│   ├── annual_report_downloader_rq.py # 标准版本主程序（命令行版本）
+│   ├── web_app_rq.py                 # 标准版本Web界面应用
 │   ├── start_web_rq.bat              # 标准版本启动脚本
 │   └── all_types_test_stocks.txt     # 测试股票代码文件
 ├── templates/

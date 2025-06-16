@@ -382,13 +382,38 @@ class AnnualReportDownloader:
         print("    ⏳ 等待下载完成...")
         
         start_time = time.time()
+        last_file_size = 0
+        stable_count = 0
+        
         while time.time() - start_time < timeout:
             # 检查下载目录中是否有.crdownload文件（Chrome下载中的临时文件）
             temp_files = list(self.download_dir.glob("*.crdownload"))
-            if not temp_files:
-                time.sleep(1)  # 等待一秒确保下载真正完成
-                print("    ✅ 下载完成")
-                return True
+            if temp_files:
+                # 还有临时文件，继续等待
+                time.sleep(1)
+                continue
+            
+            # 没有临时文件，检查最新文件是否稳定
+            try:
+                all_files = [f for f in self.download_dir.iterdir() if f.is_file()]
+                if all_files:
+                    latest_file = max(all_files, key=lambda f: f.stat().st_mtime)
+                    current_size = latest_file.stat().st_size
+                    
+                    # 检查文件大小是否稳定（连续3次检查大小不变）
+                    if current_size == last_file_size and current_size > 0:
+                        stable_count += 1
+                        if stable_count >= 3:
+                            print("    ✅ 下载完成（文件大小稳定）")
+                            return True
+                    else:
+                        stable_count = 0
+                        last_file_size = current_size
+                else:
+                    stable_count = 0
+            except Exception as e:
+                print(f"    ⚠️ 检查文件状态时出错: {e}")
+                stable_count = 0
             
             time.sleep(1)
         
@@ -427,6 +452,12 @@ class AnnualReportDownloader:
                 if new_files:
                     downloaded_file = list(new_files)[0]
                     print(f"    ✅ 下载成功: {downloaded_file}")
+                    
+                    # 🔧 修复：再次确认文件不是.crdownload文件
+                    if downloaded_file.endswith('.crdownload'):
+                        print(f"    ❌ 错误：文件仍为临时状态: {downloaded_file}")
+                        return False
+                    
                     return True
                 else:
                     print("    ❌ 未检测到新文件")
@@ -2232,8 +2263,10 @@ class AnnualReportDownloader:
         
         # 处理HK前缀
         search_term = company_name_part
+        original_search_code = company_name_part  # 保存原始输入用于精确匹配
         if search_term.startswith('HK'):
             search_term = search_term[2:]  # 去掉HK前缀
+            original_search_code = search_term  # 更新原始代码
         
         params = {
             "stock": "",
@@ -2252,7 +2285,7 @@ class AnnualReportDownloader:
         }
         
         try:
-            print(f"    🔍 搜索港股公司: {search_term}")
+            print(f"    🔍 搜索港股公司: {search_term} (精确匹配: {original_search_code})")
             response = requests.post(api_url, headers=headers, data=params, timeout=10)
             if response.status_code == 200:
                 result = response.json()
@@ -2262,6 +2295,10 @@ class AnnualReportDownloader:
                 if announcements is None:
                     print(f"    ⚠️ API返回announcements为None")
                     return None, None, None
+                
+                # 🔧 修复：收集所有匹配结果，优先精确匹配
+                exact_matches = []
+                partial_matches = []
                 
                 for ann in announcements:
                     sec_code = ann.get('secCode', '')
@@ -2273,8 +2310,24 @@ class AnnualReportDownloader:
                     
                     # 检查是否是港股（代码长度5位或以HK开头）
                     if sec_code and org_id and (len(sec_code) == 5 or sec_code.startswith('HK')):
-                        print(f"    ✓ 找到港股: {clean_name} ({sec_code}) - orgId: {org_id}")
-                        return sec_code, clean_name, org_id
+                        # 精确匹配：股票代码完全相同
+                        if sec_code == original_search_code or sec_code == original_search_code.zfill(5):
+                            exact_matches.append((sec_code, clean_name, org_id))
+                            print(f"    ✅ 精确匹配: {clean_name} ({sec_code}) - orgId: {org_id}")
+                        else:
+                            partial_matches.append((sec_code, clean_name, org_id))
+                            print(f"    📄 部分匹配: {clean_name} ({sec_code}) - orgId: {org_id}")
+                
+                # 优先返回精确匹配结果
+                if exact_matches:
+                    sec_code, clean_name, org_id = exact_matches[0]
+                    print(f"    🎯 使用精确匹配结果: {clean_name} ({sec_code})")
+                    return sec_code, clean_name, org_id
+                elif partial_matches:
+                    sec_code, clean_name, org_id = partial_matches[0]
+                    print(f"    ⚠️ 无精确匹配，使用部分匹配: {clean_name} ({sec_code})")
+                    print(f"    ⚠️ 警告：输入代码 {original_search_code} != 找到代码 {sec_code}")
+                    return sec_code, clean_name, org_id
                         
         except Exception as e:
             print(f"    ✗ 搜索港股公司失败: {e}")
@@ -2536,26 +2589,53 @@ class AnnualReportDownloader:
         """
         try:
             # 确保目录存在
-            Path(filepath).parent.mkdir(parents=True, exist_ok=True)
+            target_path = Path(filepath)
+            target_path.parent.mkdir(parents=True, exist_ok=True)
             
             # 使用浏览器下载
-            filename = Path(filepath).name
+            filename = target_path.name
             success = self.browser_download_file(url, filename)
             
             if success:
-                # 检查文件是否下载到了正确位置
-                downloaded_files = list(self.download_dir.glob("*"))
+                # 🔧 修复：在浏览器下载目录中查找文件
+                downloaded_files = [f for f in self.download_dir.iterdir() if f.is_file()]
                 if downloaded_files:
                     # 找到最新下载的文件
                     latest_file = max(downloaded_files, key=lambda f: f.stat().st_mtime)
                     
-                    # 如果文件名不匹配，重命名
-                    if latest_file.name != filename:
-                        target_path = Path(filepath)
-                        latest_file.rename(target_path)
-                        print(f"    📝 文件重命名: {latest_file.name} -> {filename}")
+                    # 增加额外安全检查
+                    if latest_file.name.endswith('.crdownload'):
+                        print(f"    ❌ 重命名失败：文件仍为临时状态: {latest_file.name}")
+                        return False
                     
-                return True
+                    print(f"    📁 浏览器下载文件: {latest_file}")
+                    print(f"    📁 目标路径: {target_path}")
+                    
+                    # 🔧 修复：移动文件到正确目录并重命名
+                    try:
+                        # 确保目标文件不存在，避免冲突
+                        if target_path.exists():
+                            print(f"    ⚠️ 目标文件已存在，删除旧文件: {filename}")
+                            target_path.unlink()
+                        
+                        # 移动并重命名文件
+                        latest_file.rename(target_path)
+                        print(f"    📝 文件移动重命名: {latest_file.name} -> {target_path}")
+                        
+                        # 验证文件是否真的存在于目标位置
+                        if target_path.exists():
+                            print(f"    ✅ 文件成功保存到: {target_path}")
+                            return True
+                        else:
+                            print(f"    ❌ 文件移动后未找到: {target_path}")
+                            return False
+                            
+                    except Exception as rename_error:
+                        print(f"    ❌ 文件移动重命名失败: {rename_error}")
+                        return False
+                else:
+                    print("    ❌ 未找到下载的文件")
+                    return False
             else:
                 return False
             

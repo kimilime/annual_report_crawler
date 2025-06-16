@@ -2155,8 +2155,10 @@ class AnnualReportDownloader:
         
         # 处理HK前缀
         search_term = company_name_part
+        original_search_code = company_name_part  # 保存原始输入用于精确匹配
         if search_term.startswith('HK'):
             search_term = search_term[2:]  # 去掉HK前缀
+            original_search_code = search_term  # 更新原始代码
         
         params = {
             "stock": "",
@@ -2175,7 +2177,7 @@ class AnnualReportDownloader:
         }
         
         try:
-            print(f"    🔍 搜索港股公司: {search_term}")
+            print(f"    🔍 搜索港股公司: {search_term} (精确匹配: {original_search_code})")
             response = requests.post(api_url, headers=headers, data=params, timeout=10)
             if response.status_code == 200:
                 result = response.json()
@@ -2185,6 +2187,10 @@ class AnnualReportDownloader:
                 if announcements is None:
                     print(f"    ⚠️ API返回announcements为None")
                     return None, None, None
+                
+                # 🔧 修复：收集所有匹配结果，优先精确匹配
+                exact_matches = []
+                partial_matches = []
                 
                 for ann in announcements:
                     sec_code = ann.get('secCode', '')
@@ -2196,8 +2202,24 @@ class AnnualReportDownloader:
                     
                     # 检查是否是港股（代码长度5位或以HK开头）
                     if sec_code and org_id and (len(sec_code) == 5 or sec_code.startswith('HK')):
-                        print(f"    ✓ 找到港股: {clean_name} ({sec_code}) - orgId: {org_id}")
-                        return sec_code, clean_name, org_id
+                        # 精确匹配：股票代码完全相同
+                        if sec_code == original_search_code or sec_code == original_search_code.zfill(5):
+                            exact_matches.append((sec_code, clean_name, org_id))
+                            print(f"    ✅ 精确匹配: {clean_name} ({sec_code}) - orgId: {org_id}")
+                        else:
+                            partial_matches.append((sec_code, clean_name, org_id))
+                            print(f"    📄 部分匹配: {clean_name} ({sec_code}) - orgId: {org_id}")
+                
+                # 优先返回精确匹配结果
+                if exact_matches:
+                    sec_code, clean_name, org_id = exact_matches[0]
+                    print(f"    🎯 使用精确匹配结果: {clean_name} ({sec_code})")
+                    return sec_code, clean_name, org_id
+                elif partial_matches:
+                    sec_code, clean_name, org_id = partial_matches[0]
+                    print(f"    ⚠️ 无精确匹配，使用部分匹配: {clean_name} ({sec_code})")
+                    print(f"    ⚠️ 警告：输入代码 {original_search_code} != 找到代码 {sec_code}")
+                    return sec_code, clean_name, org_id
                         
         except Exception as e:
             print(f"    ✗ 搜索港股公司失败: {e}")

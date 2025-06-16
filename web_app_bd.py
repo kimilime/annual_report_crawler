@@ -285,9 +285,10 @@ if __name__ == '__main__':
     print("  年报下载器 - 浏览器下载版本 Web应用")
     print("  Annual Report Crawler - Browser Download Web App")
     print("=" * 60)
-    print("🌐 Web界面: http://localhost:5000")
+    print("🌐 Web界面: http://localhost:5001")
     print("🔧 版本: 浏览器下载版 (Browser Download)")
     print("🚀 特性: 通过浏览器下载，避免文件加密")
+    print("💡 注意: BD版使用端口5001，避免与RQ版(5000)冲突")
     print("-" * 60)
     
-    app.run(debug=True, host='0.0.0.0', port=5000) 
+    app.run(debug=True, host='0.0.0.0', port=5001) 
