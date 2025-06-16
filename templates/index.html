@@ -35,6 +35,18 @@
             position: relative;
         }
 
+        .version-badge {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         .header .nav-link {
             position: absolute;
             top: 20px;
@@ -62,6 +74,29 @@
 
         .header p {
             font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .version-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .version-info h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .version-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .version-info li {
+            margin-bottom: 5px;
             opacity: 0.9;
         }
 
@@ -274,9 +309,20 @@
 <body>
     <div class="container">
         <div class="header">
+            <div class="version-badge">📊 标准版本</div>
             <a href="/readme" class="nav-link" target="_blank">📖 查看完整文档</a>
             <h1>📊 Annual Report Crawler</h1>
             <p>Developed by Terence WANG</p>
+            
+            <div class="version-info">
+                <h3>📊 标准版本 - 适用于个人电脑环境</h3>
+                <ul>
+                    <li>✅ 经典稳定的requests下载方式</li>
+                    <li>✅ 高效快速，下载速度更快</li>
+                    <li>✅ 适合无安全软件限制的环境</li>
+                    <li>💡 如果您在公司环境遇到文件加密问题，请使用浏览器下载版本</li>
+                </ul>
+            </div>
         </div>
 
         <div class="content">
@@ -309,7 +355,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label for="years">年份 (多个年份用逗号分隔)</label>
-                            <input type="text" id="years" placeholder="例如: 2023 或 2022,2023" value="2023">
+                            <input type="text" id="years" placeholder="例如: 2024 或 2023,2024" value="2024">
                         </div>
                         <div class="form-group">
                             <label for="downloadDir">下载目录</label>

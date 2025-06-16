@@ -27,7 +27,8 @@ download_status = {
     'total_stocks': 0,
     'completed_stocks': 0,
     'results': [],
-    'logs': []
+    'logs': [],
+    'download_dir': 'annual_reports'  # 存储当前使用的下载目录
 }
 
 def run_downloader_direct(stock_codes, years, download_dir):
@@ -41,6 +42,7 @@ def run_downloader_direct(stock_codes, years, download_dir):
         download_status['logs'] = []
         download_status['total_stocks'] = len(stock_codes)
         download_status['completed_stocks'] = 0
+        download_status['download_dir'] = download_dir  # 保存当前下载目录
         
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
@@ -200,7 +202,8 @@ def stop_download():
 @app.route('/downloads/<path:filename>')
 def download_file(filename):
     """下载文件"""
-    download_dir = Path('annual_reports')
+    # 使用当前配置的下载目录
+    download_dir = Path(download_status.get('download_dir', 'annual_reports'))
     
     # 递归查找文件
     for root, dirs, files in os.walk(download_dir):
