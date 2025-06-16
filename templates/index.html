@@ -32,6 +32,26 @@
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
+        }
+
+        .header .nav-link {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .header .nav-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
         }
 
         .header h1 {
@@ -254,6 +274,7 @@
 <body>
     <div class="container">
         <div class="header">
+            <a href="/readme" class="nav-link" target="_blank">📖 查看完整文档</a>
             <h1>📊 Annual Report Crawler</h1>
             <p>Developed by Terence WANG</p>
         </div>
@@ -271,8 +292,8 @@
                 </ul>
                 <h3 style="margin-top: 20px;">ℹ️ 数据来源说明</h3>
                 <ul>
-                    <li><strong>A股（含科创版与创业版）和港股</strong>的数据来自<strong>巨潮资讯网</strong>。<br><strong>注意：</strong>由于巨潮对港股的覆盖未必完整，部分报告可能存在缺漏，需要手动补全。</li>
-                    <li><strong>美股</strong>的数据来自<strong>美国证券交易委员会 (SEC)</strong> 披露的10-K文件。</li>
+                    <li><strong>A股（含科创版与创业版）和港股</strong>的数据来自<strong>巨潮资讯网</strong>，下载格式为<strong>PDF</strong>。<br><strong>注意：</strong>由于巨潮对港股的覆盖未必完整，部分报告可能存在缺漏，需要手动补全。</li>
+                    <li><strong>美股</strong>的数据来自<strong>美国证券交易委员会 (SEC)</strong> 披露的10-K文件，下载格式为<strong>HTML</strong>。</li>
                 </ul>
             </div>
 

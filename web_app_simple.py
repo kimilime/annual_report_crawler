@@ -209,6 +209,14 @@ def download_file(filename):
     
     return jsonify({'error': '文件未找到'}), 404
 
+@app.route('/readme')
+def readme():
+    """提供README.html文件访问"""
+    try:
+        return send_from_directory('.', 'README.html')
+    except FileNotFoundError:
+        return jsonify({'error': 'README.html文件未找到'}), 404
+
 if __name__ == '__main__':
     print("="*60)
     print("  Annual Report Crawler Web Interface (Simplified)")

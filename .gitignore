@@ -111,6 +111,7 @@ geckodriver
 *.pdf
 *.html
 !templates/index.html
+!README.html
 
 # 临时文件
 *.tmp
