@@ -109,7 +109,7 @@ geckodriver
 
 # 下载的PDF和HTML文件
 *.pdf
-*.html
+# *.html
 
 # 临时文件
 *.tmp
