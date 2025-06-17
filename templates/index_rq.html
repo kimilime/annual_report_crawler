@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annual Report Crawler - Requests "Mizuki" Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff0f1; /* Light Red/Pink Tint */
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .header .nav-link {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .header .nav-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .version-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .version-info h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .version-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .version-info li {
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .feature-highlight {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #28a745;
+        }
+
+        .feature-highlight h3 {
+            color: #155724;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-highlight ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .feature-highlight li {
+            margin-bottom: 8px;
+            padding-left: 25px;
+            position: relative;
+            color: #155724;
+            text-align: left;
+        }
+
+        .feature-highlight li:before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #ff5858;
+        }
+
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 88, 88, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e1e5e9;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .logs-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .logs-container {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+
+        .results-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .files-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .files-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .file-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #ff5858;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .file-meta {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #28a745;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-item.error {
+            border-left-color: #dc3545;
+        }
+
+        .result-item .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .help-section {
+            background: #e7f3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .help-section h3 {
+            color: #d94444;
+            margin-bottom: 15px;
+        }
+
+        .help-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .help-section li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .help-section li:before {
+            content: "•";
+            color: #d94444;
+            position: absolute;
+            left: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="version-badge">📊 Requests "Mizuki" Version</div>
+            <a href="/readme" class="nav-link" target="_blank">📖 查看完整文档</a>
+            <h1>📊 Annual Report Crawler</h1>
+            <p>Developed by Terence WANG</p>
+        </div>
+
+        <div class="content">
+            <!-- Requests版本特色说明 -->
+            <div class="feature-highlight">
+                <h3>📊 Requests版本特色</h3>
+                <ul>
+                    <li><strong>经典稳定:</strong> 使用Python requests库的经典下载方式</li>
+                    <li><strong>高效快速:</strong> 下载速度更快，内存占用更少</li>
+                    <li><strong>环境友好:</strong> 适合无安全软件限制的个人电脑环境</li>
+                    <li><strong>完整功能保留:</strong> 支持A股、港股、美股所有类型的年报下载</li>
+                    <li><strong>智能搜索匹配:</strong> 增强的中文数字年份识别，支持日期辅助推断</li>
+                </ul>
+            </div>
+
+            <!-- 帮助信息 -->
+            <div class="help-section">
+                <h3>🔍 支持的股票类型</h3>
+                <ul>
+                    <li><strong>A股主板:</strong> 6位数字代码 (如: 000001, 600519)</li>
+                    <li><strong>A股科创板:</strong> 688开头 (如: 688111, 688036)</li>
+                    <li><strong>A股创业板:</strong> 300开头 (如: 300750, 300122)</li>
+                    <li><strong>港股:</strong> 5位数字代码 (如: 00700, 00939)</li>
+                    <li><strong>美股:</strong> 字母代码 (如: AAPL, MSFT, GOOGL)</li>
+                </ul>
+                <h3 style="margin-top: 20px;">ℹ️ 数据来源说明</h3>
+                <ul>
+                    <li><strong>A股（含科创版与创业版）和港股</strong>的数据来自<strong>巨潮资讯网</strong>，下载格式为<strong>PDF</strong>。<br><strong>注意：</strong>由于巨潮对港股的覆盖未必完整，部分报告可能存在缺漏，需要手动补全。</li>
+                    <li><strong>美股</strong>的数据来自<strong>美国证券交易委员会 (SEC)</strong> 披露的10-K文件，下载格式为<strong>HTML</strong>。</li>
+                </ul>
+            </div>
+
+            <!-- 下载配置 -->
+            <div class="form-section">
+                <h2>📥 下载配置</h2>
+                <form id="downloadForm">
+                    <div class="form-group">
+                        <label for="stockCodes">股票代码 (每行一个或用逗号分隔)</label>
+                        <textarea id="stockCodes" placeholder="例如:&#10;000001&#10;600519&#10;AAPL&#10;或: 000001,600519,AAPL"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="years">年份 (多个年份用逗号分隔)</label>
+                            <input type="text" id="years" placeholder="例如: 2024 或 2023,2024" value="2024">
+                        </div>
+                        <div class="form-group">
+                            <label for="downloadDir">下载目录</label>
+                            <input type="text" id="downloadDir" value="annual_reports" placeholder="annual_reports">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" id="downloadBtn">🚀 开始下载</button>
+                </form>
+            </div>
+
+            <!-- 进度显示 -->
+            <div class="progress-section" id="progressSection">
+                <h2>📈 下载进度</h2>
+                <div class="progress-info">
+                    <span id="progressText">准备中...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-info">
+                    <span id="currentStock">-</span>
+                    <span id="stockCount">0/0</span>
+                </div>
+                <!-- 统计信息 -->
+                <div class="statistics-bar" id="statisticsBar" style="display: none; margin-top: 15px; padding: 10px; background: white; border-radius: 8px; font-weight: 600;">
+                    <span id="statsText" style="color: #333;"></span>
+                </div>
+            </div>
+
+            <!-- 日志显示 -->
+            <div class="logs-section" id="logsSection">
+                <h2>📋 运行日志</h2>
+                <div class="logs-container" id="logsContainer"></div>
+            </div>
+
+            <!-- 结果显示 -->
+            <div class="results-section" id="resultsSection">
+                <h2>📄 下载结果</h2>
+                <div id="resultsContainer"></div>
+            </div>
+
+            <!-- 文件列表 -->
+            <div class="files-section" id="filesSection">
+                <h2>📁 已下载文件</h2>
+                <div id="filesContainer"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2025 Annual Report Crawler - Requests "Mizuki" Version</p>
+            <p>Developed by Terence WANG</p>
+        </div>
+    </div>
+
+    <script>
+        let statusInterval;
+        let isDownloading = false;
+
+        // 表单提交
+        document.getElementById('downloadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            startDownload();
+        });
+
+        // 开始下载
+        function startDownload() {
+            if (isDownloading) return;
+
+            const stockCodesText = document.getElementById('stockCodes').value.trim();
+            const yearsText = document.getElementById('years').value.trim();
+            const downloadDir = document.getElementById('downloadDir').value.trim();
+
+            if (!stockCodesText || !yearsText) {
+                alert('请输入股票代码和年份');
+                return;
+            }
+
+            // 解析股票代码
+            let stockCodes = [];
+            if (stockCodesText.includes('\n')) {
+                stockCodes = stockCodesText.split('\n').map(s => s.trim()).filter(s => s);
+            } else if (stockCodesText.includes(',')) {
+                stockCodes = stockCodesText.split(',').map(s => s.trim()).filter(s => s);
+            } else {
+                // 单个股票代码
+                stockCodes = [stockCodesText.trim()].filter(s => s);
+            }
+
+            // 解析年份
+            const years = yearsText.split(',').map(s => parseInt(s.trim())).filter(y => y);
+
+            // 发送请求
+            fetch('/api/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    stock_codes: stockCodes,
+                    years: years,
+                    download_dir: downloadDir
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    startMonitoring();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('启动下载失败');
+            });
+        }
+
+        // 开始监控
+        function startMonitoring() {
+            isDownloading = true;
+            document.getElementById('downloadBtn').disabled = true;
+            document.getElementById('downloadBtn').textContent = '⏳ 下载中...';
+            
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('logsSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'block';
+
+            statusInterval = setInterval(updateStatus, 1000);
+        }
+
+        // 更新状态
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => response.json())
+                .then(data => {
+                    // 更新进度
+                    document.getElementById('progressFill').style.width = data.progress + '%';
+                    document.getElementById('progressPercent').textContent = data.progress + '%';
+                    document.getElementById('progressText').textContent = data.running ? '下载中...' : '完成';
+                    document.getElementById('currentStock').textContent = data.current_stock || '-';
+                    document.getElementById('stockCount').textContent = data.completed_stocks + '/' + data.total_stocks;
+
+                    // 更新日志
+                    const logsContainer = document.getElementById('logsContainer');
+                    if (data.logs.length > 0) {
+                        logsContainer.innerHTML = data.logs.map(log => 
+                            `<div>[${log.timestamp}] ${escapeHtml(log.message)}</div>`
+                        ).join('');
+                        logsContainer.scrollTop = logsContainer.scrollHeight;
+                    }
+
+                    // 更新统计信息
+                    if (data.results.length > 0) {
+                        const successCount = data.results.filter(r => r.status === 'success').length;
+                        const errorCount = data.results.filter(r => r.status === 'error').length;
+                        const totalCount = successCount + errorCount;
+                        
+                        document.getElementById('statisticsBar').style.display = 'block';
+                        document.getElementById('statsText').innerHTML = 
+                            `<span style="color: #28a745;">✅ 成功: ${successCount}</span> ` +
+                            `<span style="color: #dc3545;">❌ 失败: ${errorCount}</span> ` +
+                            `<span style="color: #6c757d;">📊 总计: ${successCount}/${totalCount}</span>`;
+                    }
+
+                    // 更新结果
+                    const resultsContainer = document.getElementById('resultsContainer');
+                    if (data.results.length > 0) {
+                        resultsContainer.innerHTML = data.results.map(result => {
+                            if (result.status === 'success') {
+                                return `
+                                    <div class="result-item">
+                                        <span>✅ ${escapeHtml(result.filename)}</span>
+                                    </div>
+                                `;
+                            } else {
+                                return `
+                                    <div class="result-item error">
+                                        <span>❌ ${escapeHtml(result.message)}</span>
+                                    </div>
+                                `;
+                            }
+                        }).join('');
+                    }
+
+                    // 检查是否完成
+                    if (!data.running && isDownloading) {
+                        clearInterval(statusInterval);
+                        isDownloading = false;
+                        document.getElementById('downloadBtn').disabled = false;
+                        document.getElementById('downloadBtn').textContent = '🚀 开始下载';
+                        
+                        // 自动刷新文件列表
+                        setTimeout(refreshFilesList, 1000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating status:', error);
+                });
+        }
+
+        // 刷新文件列表
+        function refreshFilesList() {
+            fetch('/list_files')
+                .then(response => response.json())
+                .then(data => {
+                    const filesContainer = document.getElementById('filesContainer');
+                    const filesSection = document.getElementById('filesSection');
+                    
+                    if (data.files && data.files.length > 0) {
+                        filesSection.style.display = 'block';
+                        filesContainer.innerHTML = data.files.map(file => `
+                            <div class="file-item">
+                                <div class="file-info">
+                                    <div class="file-name">${escapeHtml(file.name)}</div>
+                                    <div class="file-meta">
+                                        大小: ${formatFileSize(file.size)} | 
+                                        修改时间: ${new Date(file.modified).toLocaleString()}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        filesSection.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('获取文件列表失败:', error);
+                });
+        }
+
+        // 下载文件
+        function downloadFile(filename) {
+            window.open(`/downloads/${filename}`, '_blank');
+        }
+
+        // 工具函数
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html> 

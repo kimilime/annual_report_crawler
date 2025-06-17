@@ -112,6 +112,7 @@ geckodriver
 *.html
 !templates/index.html
 !templates/index_bd.html
+!templates/index_rq.html
 !README.html
 
 # 临时文件
