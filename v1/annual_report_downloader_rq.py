@@ -182,7 +182,7 @@ class AnnualReportDownloader:
 
     
 
-    def __init__(self, download_dir: str = "annual_reports", headless: bool = True):
+    def __init__(self, download_dir: str = "annual_reports"):
 
         """
 
@@ -193,14 +193,12 @@ class AnnualReportDownloader:
         Args:
 
             download_dir: 下载目录
-            headless: 是否使用无头模式
 
         """
 
         self.download_dir = Path(download_dir)
 
         self.download_dir.mkdir(exist_ok=True)
-        self.headless = headless
 
         
 
@@ -269,10 +267,8 @@ class AnnualReportDownloader:
             # Chrome选项配置
 
             chrome_options = Options()
-            
-            # 根据设置决定是否使用无头模式
-            if self.headless:
-                chrome_options.add_argument('--headless')  # 无头模式
+
+            chrome_options.add_argument('--headless')  # 无头模式
 
             chrome_options.add_argument('--no-sandbox')
 
@@ -316,7 +312,7 @@ class AnnualReportDownloader:
 
             
 
-            # 设置下载路径和浏览器下载配置
+            # 设置下载路径
 
             prefs = {
 
@@ -326,19 +322,7 @@ class AnnualReportDownloader:
 
                 "download.directory_upgrade": True,
 
-                "safebrowsing.enabled": True,
-
-                "profile.default_content_settings.popups": 0,
-
-                "profile.default_content_setting_values.automatic_downloads": 1,
-
-                # 允许下载多个文件
-
-                "profile.default_content_setting_values.notifications": 2,
-
-                # PDF处理设置
-
-                "plugins.always_open_pdf_externally": True,
+                "safebrowsing.enabled": True
 
             }
 
@@ -427,98 +411,6 @@ class AnnualReportDownloader:
                         return False
 
         return True
-
-    def wait_for_download_complete(self, timeout=60):
-        """等待下载完成"""
-        print("    ⏳ 等待下载完成...")
-        
-        start_time = time.time()
-        last_file_size = 0
-        stable_count = 0
-        
-        while time.time() - start_time < timeout:
-            # 检查下载目录中是否有.crdownload文件（Chrome下载中的临时文件）
-            temp_files = list(self.download_dir.glob("*.crdownload"))
-            if temp_files:
-                # 还有临时文件，继续等待
-                time.sleep(1)
-                continue
-            
-            # 没有临时文件，检查最新文件是否稳定
-            try:
-                all_files = [f for f in self.download_dir.iterdir() if f.is_file()]
-                if all_files:
-                    latest_file = max(all_files, key=lambda f: f.stat().st_mtime)
-                    current_size = latest_file.stat().st_size
-                    
-                    # 检查文件大小是否稳定（连续3次检查大小不变）
-                    if current_size == last_file_size and current_size > 0:
-                        stable_count += 1
-                        if stable_count >= 3:
-                            print("    ✅ 下载完成（文件大小稳定）")
-                            return True
-                    else:
-                        stable_count = 0
-                        last_file_size = current_size
-                else:
-                    stable_count = 0
-            except Exception as e:
-                print(f"    ⚠️ 检查文件状态时出错: {e}")
-                stable_count = 0
-            
-            time.sleep(1)
-        
-        print("    ⚠️ 下载超时")
-        return False
-
-    def browser_download_file(self, url: str, expected_filename: str = None) -> bool:
-        """
-        通过浏览器下载文件
-        
-        Args:
-            url: 下载URL
-            expected_filename: 期望的文件名（用于验证）
-            
-        Returns:
-            是否下载成功
-        """
-        try:
-            if not self.driver:
-                self.init_selenium_driver()
-            
-            print(f"    🌐 浏览器下载: {url}")
-            
-            # 记录下载前的文件列表
-            files_before = set(f.name for f in self.download_dir.iterdir() if f.is_file())
-            
-            # 导航到下载URL
-            self.driver.get(url)
-            
-            # 等待下载完成
-            if self.wait_for_download_complete():
-                # 检查新下载的文件
-                files_after = set(f.name for f in self.download_dir.iterdir() if f.is_file())
-                new_files = files_after - files_before
-                
-                if new_files:
-                    downloaded_file = list(new_files)[0]
-                    print(f"    ✅ 下载成功: {downloaded_file}")
-                    
-                    # 🔧 修复：再次确认文件不是.crdownload文件
-                    if downloaded_file.endswith('.crdownload'):
-                        print(f"    ❌ 错误：文件仍为临时状态: {downloaded_file}")
-                        return False
-                    
-                    return True
-                else:
-                    print("    ❌ 未检测到新文件")
-                    return False
-            else:
-                return False
-                
-        except Exception as e:
-            print(f"    ❌ 浏览器下载失败: {e}")
-            return False
 
     
 
@@ -2643,7 +2535,7 @@ class AnnualReportDownloader:
 
     def download_pdf(self, url: str, filepath: str) -> bool:
         """
-        通过浏览器下载PDF文件
+        下载PDF文件
         
         Args:
             url: 下载URL
@@ -2653,56 +2545,22 @@ class AnnualReportDownloader:
             是否下载成功
         """
         try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            
+            response = requests.get(url, headers=headers, timeout=30, stream=True)
+            response.raise_for_status()
+            
             # 确保目录存在
-            target_path = Path(filepath)
-            target_path.parent.mkdir(parents=True, exist_ok=True)
+            Path(filepath).parent.mkdir(parents=True, exist_ok=True)
             
-            # 使用浏览器下载
-            filename = target_path.name
-            success = self.browser_download_file(url, filename)
+            with open(filepath, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
             
-            if success:
-                # 🔧 修复：在浏览器下载目录中查找文件
-                downloaded_files = [f for f in self.download_dir.iterdir() if f.is_file()]
-                if downloaded_files:
-                    # 找到最新下载的文件
-                    latest_file = max(downloaded_files, key=lambda f: f.stat().st_mtime)
-                    
-                    # 增加额外安全检查
-                    if latest_file.name.endswith('.crdownload'):
-                        print(f"    ❌ 重命名失败：文件仍为临时状态: {latest_file.name}")
-                        return False
-                    
-                    print(f"    📁 浏览器下载文件: {latest_file}")
-                    print(f"    📁 目标路径: {target_path}")
-                    
-                    # 🔧 修复：移动文件到正确目录并重命名
-                    try:
-                        # 确保目标文件不存在，避免冲突
-                        if target_path.exists():
-                            print(f"    ⚠️ 目标文件已存在，删除旧文件: {filename}")
-                            target_path.unlink()
-                        
-                        # 移动并重命名文件
-                        latest_file.rename(target_path)
-                        print(f"    📝 文件移动重命名: {latest_file.name} -> {target_path}")
-                        
-                        # 验证文件是否真的存在于目标位置
-                        if target_path.exists():
-                            print(f"    ✅ 文件成功保存到: {target_path}")
-                            return True
-                        else:
-                            print(f"    ❌ 文件移动后未找到: {target_path}")
-                            return False
-                            
-                    except Exception as rename_error:
-                        print(f"    ❌ 文件移动重命名失败: {rename_error}")
-                        return False
-                else:
-                    print("    ❌ 未找到下载的文件")
-                    return False
-            else:
-                return False
+            return True
             
         except Exception as e:
             print(f"    下载失败: {e}")
@@ -2940,21 +2798,21 @@ class AnnualReportDownloader:
 
                     year = failure['year']
 
+                    error_msg = failure['error']
+
                     
 
-                    # 构建显示字符串：股票代码 + 公司名称（如果有）+ 年份
+                    # 格式化显示：股票代码 公司名称 年份
 
                     if company_name:
 
-                        stock_info = f"{stock_code} {company_name} {year}年"
+                        stock_info = f"{stock_code} {company_name} {year}"
 
                     else:
 
-                        stock_info = f"{stock_code} {year}年"
+                        stock_info = f"{stock_code} {year}"
 
                     
-
-                    error_msg = failure['error']
 
                     if failure.get('title'):
 
@@ -2986,10 +2844,10 @@ class AnnualReportDownloader:
 
         print(f"\n📁 下载文件保存目录 {self.download_dir.absolute()}")
 
-        print("="*60)
-        print('  Annual Report Crawler - Browser "Otako" Version')
-        print("  Developed by Terence WANG")
-        print("="*60)
+        print("================================================================")
+        print('Annual Report Crawler - Requests "Mizuki" Version')
+        print("Developed by Terence WANG")
+        print("================================================================")
         print()
 
     def download_us_stock_10k_reports(self, stock_symbol, years):
@@ -3226,28 +3084,25 @@ class AnnualReportDownloader:
             return []
     
     def _download_us_filing_content(self, document_url):
-        """通过浏览器获取SEC文档内容"""
+        """下载SEC文档内容"""
         try:
-            if not self.driver:
-                self.init_selenium_driver()
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate',
+                'Connection': 'keep-alive',
+            }
             
-            print(f"    🌐 访问SEC文档: {document_url}")
-            self.driver.get(document_url)
-            
-            # 等待页面加载
-            time.sleep(3)
-            
-            # 获取页面HTML内容
-            html_content = self.driver.page_source
-            
-            if html_content and len(html_content) > 1000:  # 确保获取到了有效内容
-                return html_content
+            response = requests.get(document_url, headers=headers, timeout=30)
+            if response.status_code == 200:
+                return response.text
             else:
-                print(f"    ⚠️ 获取到的内容过短或为空")
+                print(f"    ⚠️ HTTP错误: {response.status_code}")
                 return None
                 
         except Exception as e:
-            print(f"    ⚠️ 获取文档内容时出错: {str(e)}")
+            print(f"    ⚠️ 下载文档内容时出错: {str(e)}")
             return None
     
     def _save_us_filing_as_html(self, html_content, filepath, stock_symbol, year):
@@ -3403,95 +3258,6 @@ class AnnualReportDownloader:
             # 如果清理失败，返回原始内容
             return html_content
     
-    def enhanced_year_matching(self, title, target_year):
-        """
-        增强的年份匹配函数，支持数字和中文年份格式
-        
-        Args:
-            title (str): 公告标题
-            target_year (int): 目标年份
-            
-        Returns:
-            bool: 是否匹配
-        """
-        if not title or not target_year:
-            return False
-        
-        title_lower = title.lower()
-        year_str = str(target_year)
-        
-        # 1. 直接数字匹配
-        if year_str in title:
-            return True
-        
-        # 2. 中文数字映射
-        chinese_digits = {
-            '0': ['〇', '零', 'O', 'o'],
-            '1': ['一', '壹'],
-            '2': ['二', '贰', '貳'],
-            '3': ['三', '叁', '參'],
-            '4': ['四', '肆'],
-            '5': ['五', '伍'],
-            '6': ['六', '陆', '陸'],
-            '7': ['七', '柒'],
-            '8': ['八', '捌'],
-            '9': ['九', '玖']
-        }
-        
-        def generate_chinese_patterns(year_str):
-            """递归生成所有可能的中文数字组合"""
-            if not year_str:
-                return ['']
-            
-            first_digit = year_str[0]
-            rest_patterns = generate_chinese_patterns(year_str[1:])
-            
-            patterns = []
-            for chinese_char in chinese_digits.get(first_digit, [first_digit]):
-                for rest_pattern in rest_patterns:
-                    patterns.append(chinese_char + rest_pattern)
-            
-            return patterns
-        
-        # 3. 生成所有可能的中文年份格式
-        chinese_patterns = generate_chinese_patterns(year_str)
-        
-        for pattern in chinese_patterns:
-            if pattern in title:
-                return True
-        
-        # 4. 港股特殊格式匹配
-        hk_patterns = [
-            f"{year_str}年度报告",
-            f"{year_str}年年度报告", 
-            f"{year_str}年报",
-            f"{year_str} annual report",
-            f"annual report {year_str}",
-            f"年度报告{year_str}",
-            f"企业年度报告{year_str}",
-            f"h股公告年度报告{year_str}"
-        ]
-        
-        for pattern in hk_patterns:
-            if pattern in title_lower:
-                return True
-        
-        # 5. 中文年份 + 年度报告格式
-        for pattern in chinese_patterns:
-            chinese_year_patterns = [
-                f"{pattern}年度报告",
-                f"{pattern}年年度报告",
-                f"{pattern}年报",
-                f"年度报告{pattern}",
-                f"企业年度报告{pattern}"
-            ]
-            
-            for chinese_pattern in chinese_year_patterns:
-                if chinese_pattern in title:
-                    return True
-        
-        return False
-
 
 
 
@@ -3597,10 +3363,10 @@ def load_stock_codes_from_file(filepath: str) -> List[str]:
 
 def main():
     # 打印欢迎信息
-    print("="*60)
-    print('  Annual Report Crawler - Browser "Otako" Version')
-    print("  Developed by Terence WANG")
-    print("="*60)
+    print("================================================================")
+    print('Annual Report Crawler - Requests "Mizuki" Version')
+    print("Developed by Terence WANG")
+    print("================================================================")
     
     parser = argparse.ArgumentParser(description="年报下载器，支持A股、港股和美股。")
     
@@ -3647,4 +3413,3 @@ if __name__ == "__main__":
 
     main()
 
- 

@@ -59,9 +59,10 @@ def download_worker(stock_codes, years, download_dir='annual_reports'):
         download_status['results'] = []
         
         # 显示版本信息
-        log_message("============================================================")
+        log_message("================================================================")
         log_message('Annual Report Crawler - Browser "Otako" Version')
-        log_message("============================================================")
+        log_message("Developed by Terence WANG")
+        log_message("================================================================")
         
         log_message(f"📊 共 {len(stock_codes)} 只股票，{len(years)} 个年份")
         log_message(f"📁 下载目录: {download_dir}")
@@ -132,9 +133,10 @@ def download_worker(stock_codes, years, download_dir='annual_reports'):
         log_message(f"📊 总计: 成功 {total_success}, 失败 {total_failed}")
         
         # 显示结束版本信息
-        log_message("============================================================")
+        log_message("================================================================")
         log_message('Annual Report Crawler - Browser "Otako" Version')
-        log_message("============================================================")
+        log_message("Developed by Terence WANG")
+        log_message("================================================================")
         
         # 更新最终状态
         download_status['progress'] = 100
@@ -226,43 +228,6 @@ def get_status_alias():
     """获取下载状态 - 兼容路由"""
     return jsonify(download_status)
 
-@app.route('/files')
-def list_files():
-    """列出下载的文件"""
-    try:
-        # 尝试获取当前下载目录，如果没有就使用默认目录
-        current_download_dir = getattr(downloader, 'download_dir', None)
-        if current_download_dir:
-            download_dir = current_download_dir
-        else:
-            download_dir = Path("annual_reports")
-            
-        if not download_dir.exists():
-            return jsonify({'files': []})
-        
-        files = []
-        for file_path in download_dir.rglob("*"):
-            if file_path.is_file():
-                relative_path = file_path.relative_to(download_dir)
-                files.append({
-                    'name': file_path.name,
-                    'path': str(relative_path),
-                    'size': file_path.stat().st_size,
-                    'modified': datetime.fromtimestamp(file_path.stat().st_mtime).strftime('%Y-%m-%d %H:%M:%S')
-                })
-        
-        # 按修改时间排序
-        files.sort(key=lambda x: x['modified'], reverse=True)
-        return jsonify({'files': files})
-        
-    except Exception as e:
-        return jsonify({'files': [], 'error': str(e)})
-
-@app.route('/list_files')
-def list_files_alias():
-    """列出下载的文件 - 兼容路由"""
-    return list_files()
-
 @app.route('/clear_logs', methods=['POST'])
 def clear_logs():
     """清空日志"""
@@ -301,14 +266,14 @@ def health_check():
     })
 
 if __name__ == '__main__':
-    print("=" * 60)
-    print('  年报下载器 - Browser "Otako" Version Web应用')
-    print('  Annual Report Crawler - Browser "Otako" Version Web App')
-    print("=" * 60)
+    print("================================================================")
+    print('Annual Report Crawler - Browser "Otako" Version')
+    print("Developed by Terence WANG")
+    print("================================================================")
     print("🌐 Web界面: http://localhost:30331")
     print('🔧 版本: Browser "Otako" Version')
     print("🚀 特性: 通过浏览器下载，避免文件加密")
     print('💡 注意: Browser "Otako" Version使用端口30331，避免与Requests版本(31015)冲突')
-    print("-" * 60)
+    print("================================================================")
     
     app.run(debug=True, host='0.0.0.0', port=30331) 

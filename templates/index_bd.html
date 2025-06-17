@@ -343,42 +343,7 @@
             border-top: 1px solid #eee;
         }
 
-        .files-section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            display: none;
-        }
 
-        .files-section h2 {
-            margin-bottom: 20px;
-        }
-
-        .file-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid #c44569;
-        }
-
-        .file-info {
-            flex: 1;
-        }
-
-        .file-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .file-meta {
-            font-size: 12px;
-            color: #666;
-        }
 
         @media (max-width: 768px) {
             .form-row {
@@ -454,7 +419,9 @@
                         </div>
                     </div>
 
+                    <div class="btn-wrapper">
                     <button type="submit" class="btn" id="downloadBtn">🚀 开始下载</button>
+                    </div>
                 </form>
             </div>
 
@@ -490,11 +457,7 @@
                 <div id="resultsContainer"></div>
             </div>
 
-            <!-- 文件列表 -->
-            <div class="files-section" id="filesSection">
-                <h2>📁 已下载文件</h2>
-                <div id="filesContainer"></div>
-            </div>
+
         </div>
 
         <div class="footer">
@@ -510,7 +473,6 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             setupEventListeners();
-            refreshFilesList();
         });
 
         function setupEventListeners() {
@@ -564,6 +526,16 @@
             isDownloading = true;
             document.getElementById('downloadBtn').disabled = true;
             document.getElementById('downloadBtn').textContent = '⏳ 下载中...';
+            
+            // 立即重置所有状态显示
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('progressPercent').textContent = '0%';
+            document.getElementById('progressText').textContent = '准备中...';
+            document.getElementById('currentStock').textContent = '-';
+            document.getElementById('stockCount').textContent = '0/0';
+            document.getElementById('statisticsBar').style.display = 'none';
+            document.getElementById('logsContainer').innerHTML = '';
+            document.getElementById('resultsContainer').innerHTML = '';
             
             document.getElementById('progressSection').style.display = 'block';
             document.getElementById('logsSection').style.display = 'block';
@@ -632,9 +604,6 @@
                         isDownloading = false;
                         document.getElementById('downloadBtn').disabled = false;
                         document.getElementById('downloadBtn').textContent = '🚀 开始下载';
-                        
-                        // 自动刷新文件列表
-                        setTimeout(refreshFilesList, 1000);
                     }
                 })
                 .catch(error => {
@@ -642,40 +611,7 @@
                 });
         }
 
-        // 刷新文件列表
-        function refreshFilesList() {
-            fetch('/list_files')
-                .then(response => response.json())
-                .then(data => {
-                    const filesContainer = document.getElementById('filesContainer');
-                    const filesSection = document.getElementById('filesSection');
-                    
-                    if (data.files && data.files.length > 0) {
-                        filesSection.style.display = 'block';
-                        filesContainer.innerHTML = data.files.map(file => `
-                            <div class="file-item">
-                                <div class="file-info">
-                                    <div class="file-name">${escapeHtml(file.name)}</div>
-                                    <div class="file-meta">
-                                        大小: ${formatFileSize(file.size)} | 
-                                        修改时间: ${new Date(file.modified).toLocaleString()}
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('');
-                    } else {
-                        filesSection.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error('获取文件列表失败:', error);
-                });
-        }
 
-        // 下载文件
-        function downloadFile(filename) {
-            window.open(`/download/${encodeURIComponent(filename)}`, '_blank');
-        }
 
         // 工具函数
         function escapeHtml(text) {

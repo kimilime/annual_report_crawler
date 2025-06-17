@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annual Report Crawler - Requests "Mizuki" Version</title>
+    <title>Annual Report Crawler - Unified "Hysilens" Version</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #fff0f1; /* Light Red/Pink Tint */
+            background: #f7f7f7;
             min-height: 100vh;
             padding: 20px;
         }
@@ -28,24 +28,14 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            background: linear-gradient(135deg, #e53935 0%, #7b1fa2 100%);
             color: white;
             padding: 30px;
             text-align: center;
             position: relative;
         }
 
-        .version-badge {
-            position: absolute;
-            top: 20px;
-            left: 30px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
+
 
         .header .nav-link {
             position: absolute;
@@ -77,66 +67,87 @@
             opacity: 0.9;
         }
 
-        .version-info {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .version-info h3 {
-            margin-bottom: 10px;
-            color: #fff;
-        }
-
-        .version-info ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .version-info li {
-            margin-bottom: 5px;
-            opacity: 0.9;
-        }
-
         .content {
-            padding: 40px;
+            padding: 30px 40px 40px 40px;
         }
 
-        .feature-highlight {
-            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 100%);
-            padding: 25px;
+
+
+        .mode-selector {
+            background: #f8f9fa;
+            padding: 20px;
             border-radius: 10px;
             margin-bottom: 30px;
-            border-left: 4px solid #28a745;
+            border: 2px solid #e1e5e9;
         }
 
-        .feature-highlight h3 {
-            color: #155724;
+        .mode-selector h3 {
             margin-bottom: 15px;
+            color: #333;
+        }
+
+        .mode-options {
             display: flex;
-            align-items: center;
-            gap: 10px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .feature-highlight ul {
-            list-style: none;
-            padding-left: 0;
+        .mode-option {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
         }
 
-        .feature-highlight li {
-            margin-bottom: 8px;
-            padding-left: 25px;
-            position: relative;
-            color: #155724;
-            text-align: left;
+        .mode-option[data-mode="mizuki"]:hover {
+            border-color: #e53935;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.2);
         }
 
-        .feature-highlight li:before {
-            content: "✅";
-            position: absolute;
-            left: 0;
+        .mode-option[data-mode="otako"]:hover {
+            border-color: #7b1fa2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(123, 31, 162, 0.2);
+        }
+
+        .mode-option.selected {
+            border-color: #e53935;
+        }
+
+        .mode-option[data-mode="mizuki"].selected {
+            background: rgba(229, 57, 53, 0.1);
+            border-color: #e53935;
+        }
+
+        .mode-option[data-mode="otako"].selected {
+            background: rgba(123, 31, 162, 0.1);
+            border-color: #7b1fa2;
+        }
+
+        .mode-option .mode-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .mode-option[data-mode="mizuki"] .mode-title {
+            color: #e53935;
+        }
+
+        .mode-option[data-mode="otako"] .mode-title {
+            color: #7b1fa2;
+        }
+
+        .mode-option .mode-description {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.4;
         }
 
         .form-section {
@@ -168,7 +179,7 @@
 
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
-            border-color: #ff5858;
+            border-color: #e53935;
         }
 
         .form-group textarea {
@@ -186,7 +197,7 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            background: linear-gradient(135deg, #e53935 0%, #7b1fa2 100%);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -195,17 +206,26 @@
             font-weight: 600;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 88, 88, 0.4);
+            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.4);
         }
 
         .btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+        }
+
+        .btn.secondary {
+            background: #6c757d;
+        }
+
+        .btn.secondary:hover {
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
         }
 
         .progress-section {
@@ -227,7 +247,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #f857a6 0%, #ff5858 100%);
+            background: linear-gradient(135deg, #e53935 0%, #7b1fa2 100%);
             width: 0%;
             transition: width 0.3s;
         }
@@ -264,43 +284,6 @@
             display: none;
         }
 
-        .files-section {
-            background: #f8f9fa;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            display: none;
-        }
-
-        .files-section h2 {
-            margin-bottom: 20px;
-        }
-
-        .file-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid #ff5858;
-        }
-
-        .file-info {
-            flex: 1;
-        }
-
-        .file-name {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .file-meta {
-            font-size: 12px;
-            color: #666;
-        }
-
         .result-item {
             background: white;
             padding: 15px;
@@ -316,16 +299,6 @@
             border-left-color: #dc3545;
         }
 
-        .result-item .download-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 5px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
         .help-section {
             background: #e7f3ff;
             padding: 20px;
@@ -334,7 +307,7 @@
         }
 
         .help-section h3 {
-            color: #d94444;
+            color: #e53935;
             margin-bottom: 15px;
         }
 
@@ -351,7 +324,7 @@
 
         .help-section li:before {
             content: "•";
-            color: #d94444;
+            color: #e53935;
             position: absolute;
             left: 0;
         }
@@ -363,8 +336,21 @@
             border-top: 1px solid #eee;
         }
 
+        .statistics-bar {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .form-row {
+                flex-direction: column;
+            }
+            
+            .mode-options {
                 flex-direction: column;
             }
             
@@ -381,47 +367,39 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="version-badge">📊 Requests "Mizuki" Version</div>
-            <a href="/readme" class="nav-link" target="_blank">📖 查看完整文档</a>
             <h1>📊 Annual Report Crawler</h1>
             <p>Developed by Terence WANG</p>
+            <p>🔧 v2.0.0 Unified "Hysilens" Version | <a href="/readme" target="_blank" style="color: rgba(255, 255, 255, 0.9); text-decoration: underline;">查看文档</a></p>
         </div>
 
         <div class="content">
-            <!-- Requests版本特色说明 -->
-            <div class="feature-highlight">
-                <h3>📊 Requests版本特色</h3>
-                <ul>
-                    <li><strong>经典稳定:</strong> 使用Python requests库的经典下载方式</li>
-                    <li><strong>高效快速:</strong> 下载速度更快，内存占用更少</li>
-                    <li><strong>环境友好:</strong> 适合无安全软件限制的个人电脑环境</li>
-                    <li><strong>完整功能保留:</strong> 支持A股、港股、美股所有类型的年报下载</li>
-                    <li><strong>智能搜索匹配:</strong> 增强的中文数字年份识别，支持日期辅助推断</li>
-                </ul>
+
+            <!-- 下载模式选择 -->
+            <div class="mode-selector">
+                <h3>⚙️ 选择下载模式</h3>
+                <div class="mode-options">
+                    <div class="mode-option selected" data-mode="mizuki">
+                        <div class="mode-title">📊 Requests "Mizuki" Mode</div>
+                        <div class="mode-description">
+                            使用Python requests库的经典下载方式。下载速度快，内存占用少，适合无安全软件限制的环境。
+                        </div>
+                    </div>
+                    <div class="mode-option" data-mode="otako">
+                        <div class="mode-title">🌐 Browser "Otako" Mode</div>
+                        <div class="mode-description">
+                            通过浏览器下载，避免文件加密问题。适合企业环境，兼容各种安全软件，使用Chrome原生下载功能。
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- 帮助信息 -->
-            <div class="help-section">
-                <h3>🔍 支持的股票类型</h3>
-                <ul>
-                    <li><strong>A股主板:</strong> 6位数字代码 (如: 000001, 600519)</li>
-                    <li><strong>A股科创板:</strong> 688开头 (如: 688111, 688036)</li>
-                    <li><strong>A股创业板:</strong> 300开头 (如: 300750, 300122)</li>
-                    <li><strong>港股:</strong> 5位数字代码 (如: 00700, 00939)</li>
-                    <li><strong>美股:</strong> 字母代码 (如: AAPL, MSFT, GOOGL)</li>
-                </ul>
-                <h3 style="margin-top: 20px;">ℹ️ 数据来源说明</h3>
-                <ul>
-                    <li><strong>A股（含科创版与创业版）和港股</strong>的数据来自<strong>巨潮资讯网</strong>，下载格式为<strong>PDF</strong>。<br><strong>注意：</strong>由于巨潮对港股的覆盖未必完整，部分报告可能存在缺漏，需要手动补全。</li>
-                    <li><strong>美股</strong>的数据来自<strong>美国证券交易委员会 (SEC)</strong> 披露的10-K文件，下载格式为<strong>HTML</strong>。</li>
-                </ul>
-            </div>
+
 
             <!-- 下载配置 -->
             <div class="form-section">
                 <h2>📥 下载配置</h2>
                 <form id="downloadForm">
-                    <div class="form-group">
+                    <div class="form-group" style="margin-bottom: 35px;">
                         <label for="stockCodes">股票代码 (每行一个或用逗号分隔)</label>
                         <textarea id="stockCodes" placeholder="例如:&#10;000001&#10;600519&#10;AAPL&#10;或: 000001,600519,AAPL"></textarea>
                     </div>
@@ -456,7 +434,7 @@
                     <span id="stockCount">0/0</span>
                 </div>
                 <!-- 统计信息 -->
-                <div class="statistics-bar" id="statisticsBar" style="display: none; margin-top: 15px; padding: 10px; background: white; border-radius: 8px; font-weight: 600;">
+                <div class="statistics-bar" id="statisticsBar">
                     <span id="statsText" style="color: #333;"></span>
                 </div>
             </div>
@@ -472,25 +450,49 @@
                 <h2>📄 下载结果</h2>
                 <div id="resultsContainer"></div>
             </div>
-
-
         </div>
 
         <div class="footer">
-            <p>&copy; 2025 Annual Report Crawler - Requests "Mizuki" Version</p>
-            <p>Developed by Terence WANG</p>
+            <p>&copy; 2025 Annual Report Crawler - Unified "Hysilens" Version v2</p>
+            <p>Developed by Terence WANG | 🎯 双模式统一版本，智能选择最佳下载方式</p>
         </div>
     </div>
 
     <script>
         let statusInterval;
         let isDownloading = false;
+        let selectedMode = 'mizuki'; // 默认选择Mizuki模式
 
-        // 表单提交
-        document.getElementById('downloadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            startDownload();
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
         });
+
+        function setupEventListeners() {
+            // 表单提交
+            document.getElementById('downloadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                startDownload();
+            });
+
+            // 模式选择
+            document.querySelectorAll('.mode-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除所有选中状态
+                    document.querySelectorAll('.mode-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 添加选中状态
+                    this.classList.add('selected');
+                    selectedMode = this.getAttribute('data-mode');
+                    
+                    console.log('选择模式:', selectedMode);
+                });
+            });
+        }
+
+
 
         // 开始下载
         function startDownload() {
@@ -512,7 +514,6 @@
             } else if (stockCodesText.includes(',')) {
                 stockCodes = stockCodesText.split(',').map(s => s.trim()).filter(s => s);
             } else {
-                // 单个股票代码
                 stockCodes = [stockCodesText.trim()].filter(s => s);
             }
 
@@ -528,7 +529,8 @@
                 body: JSON.stringify({
                     stock_codes: stockCodes,
                     years: years,
-                    download_dir: downloadDir
+                    download_dir: downloadDir,
+                    mode: selectedMode
                 })
             })
             .then(response => response.json())
@@ -635,21 +637,11 @@
                 });
         }
 
-
-
         // 工具函数
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
     </script>
 </body>

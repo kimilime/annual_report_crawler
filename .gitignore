@@ -113,6 +113,7 @@ geckodriver
 !templates/index.html
 !templates/index_bd.html
 !templates/index_rq.html
+!templates/index_hysilens.html
 !README.html
 
 # 临时文件

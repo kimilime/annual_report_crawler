@@ -1,34 +1,47 @@
-# 年报下载器 (Annual Report Crawler)
+# Annual Report Crawler - Unified "Hysilens" Version v2
 
-**版本: 2.0.0 (Otako & Mizuki)**
+**版本: 2.0.0 (统一"Hysilens"版本)**
 
-一个功能强大的年报下载工具，支持A股、港股和美股，提供两种模式以适应不同使用环境。
+一个功能强大的年报下载工具，支持A股、港股和美股。**v2版本整合了两种下载模式到统一界面**，让用户智能选择最适合的下载方式。
+
+**开发者:** Terence WANG
 
 ---
 
-## 🔥 两大版本
+## 🎉 v2版本特色
 
-本项目提供两种核心版本，以满足不同用户的需求。
+### 🔧 统一"Hysilens"版本优势
 
-### 🌐 Browser "Otako" Version (浏览器模式)
-**核心特性**:
-- ✅ **环境兼容**: 通过模拟浏览器下载，能有效规避部分企业环境（如绿盾、域之盾）下的文件加密或拦截问题。
-- ✅ **过程透明**: 可选择显示浏览器窗口，直观看到下载过程。
-- ✅ **功能完整**: 支持全市场年报下载。
+**v2版本**整合了原有的Requests "Mizuki" Mode和Browser "Otako" Mode，提供：
 
-**启动方式**:
-- 双击运行 `start_web_bd.bat`
-- 浏览器访问 `http://localhost:30331`
+- ✅ **统一界面**: 一个Web界面管理所有下载模式
+- ✅ **智能选择**: 根据使用环境选择最佳下载模式  
+- ✅ **代码复用**: 避免重复维护，提高开发效率
+- ✅ **完整功能**: 保留所有v1版本的功能
+- ✅ **易于扩展**: 未来可轻松添加新的下载模式
 
-### 📊 Requests "Mizuki" Version (请求模式)
-**核心特性**:
-- ✅ **高效快速**: 采用经典的 `requests` 库进行HTTP请求，下载速度更快，资源占用更少。
-- ✅ **经典稳定**: 历经考验的下载方式，适合绝大多数个人使用场景。
-- ✅ **命令行友好**: 核心脚本可直接通过命令行调用，方便集成与自动化。
+### 🎯 双模式支持
 
-**启动方式**:
-- 双击运行 `start_web_rq.bat`
-- 或命令行执行 `python annual_report_downloader_rq.py`
+#### 📊 Requests "Mizuki" Mode
+**适用场景**: 个人电脑环境，追求下载速度
+- ✅ 下载速度快，内存占用少
+- ✅ 无需浏览器依赖
+- ❌ 可能遇到文件加密问题
+
+#### 🌐 Browser "Otako" Mode
+**适用场景**: 企业办公环境，有安全软件限制
+- ✅ 避免文件加密问题
+- ✅ 兼容企业安全软件
+- ❌ 需要Chrome浏览器，速度相对较慢
+
+### 🚀 快速开始
+```bash
+# 启动v2统一版本
+start_web_hysilens.bat
+
+# 访问地址
+http://localhost:31346
+```
 
 ## 核心功能
 
@@ -40,6 +53,64 @@
 - 📄 **多格式支持**: A股和港股下载为PDF格式，美股下载为HTML格式的10-K报告。
 - 📈 **详细报告**: 任务完成后提供详细的下载统计与失败原因分析。
 - 🔒 **企业友好**: 浏览器模式完美适配企业安全环境。
+
+## 🔍 支持的股票类型
+
+### A股市场
+- **主板**: 6位数字代码
+  - 上海主板: `600XXX`, `601XXX`, `603XXX`, `605XXX` (如: `600519` 贵州茅台)
+  - 深圳主板: `000XXX`, `001XXX`, `002XXX` (如: `000001` 平安银行)
+
+- **科创板**: `688XXX` 开头
+  - 示例: `688111` 金山办公, `688036` 传音控股
+
+- **创业板**: `300XXX` 开头  
+  - 示例: `300750` 宁德时代, `300122` 智飞生物
+
+### 港股市场
+- **代码格式**: 5位数字代码 (前面补零)
+  - 示例: `00700` 腾讯控股, `00939` 建设银行, `01810` 小米集团
+
+### 美股市场
+- **代码格式**: 字母代码 (1-5位字母)
+  - 示例: `AAPL` 苹果, `MSFT` 微软, `GOOGL` 谷歌, `TSLA` 特斯拉
+
+## ℹ️ 数据来源说明
+
+### A股和港股
+- **数据来源**: [巨潮资讯网](http://www.cninfo.com.cn/)
+- **下载格式**: PDF
+- **覆盖范围**: 
+  - A股: 完整覆盖主板、科创板、创业板
+  - 港股: 覆盖主要股票，部分可能存在缺漏
+
+⚠️ **港股注意事项**: 由于巨潮资讯网对港股的覆盖未必完整，部分港股年报可能存在缺漏，需要手动补全。
+
+### 美股
+- **数据来源**: [美国证券交易委员会 (SEC)](https://www.sec.gov/)
+- **下载格式**: HTML (10-K 报告)
+- **覆盖范围**: 所有在美国注册的上市公司
+
+### 代码格式示例
+
+```
+# A股示例
+000001        # 平安银行 (深圳主板)
+600519        # 贵州茅台 (上海主板) 
+688111        # 金山办公 (科创板)
+300750        # 宁德时代 (创业板)
+
+# 港股示例  
+00700         # 腾讯控股
+00939         # 建设银行
+01810         # 小米集团
+
+# 美股示例
+AAPL          # 苹果
+MSFT          # 微软
+GOOGL         # 谷歌
+TSLA          # 特斯拉
+```
 
 ## 部署与安装
 
@@ -61,75 +132,97 @@ A股的科创板、创业板以及港股的下载依赖于 [Selenium](https://ww
 
 ## 使用指南
 
-### 方式一：Web 界面 (推荐)
+### 🖥️ Web界面使用 (推荐)
 
-两个版本都提供了现代化的Web界面，这是最简单直观的使用方式。
+**v2统一版本**提供了现代化的单一Web界面，这是最简单直观的使用方式。
 
-1.  **启动服务**:
-    - **浏览器模式**: 双击运行 `start_web_bd.bat`。
-    - **请求模式**: 双击运行 `start_web_rq.bat`。
+1. **启动服务**:
+   ```bash
+   start_web_hysilens.bat
+   ```
 
-2.  **访问界面**:
-    - 脚本启动后，会自动在浏览器中打开对应界面：
-        - **Browser "Otako" Version**: `http://localhost:30331`
-        - **Requests "Mizuki" Version**: `http://localhost:31015`
-    - 您也可以在局域网内的其他设备上通过 `http://[运行电脑的IP地址]:[端口号]` 来访问。
+2. **访问界面**:
+   - 在浏览器中访问: `http://localhost:31346`
+   - 或在局域网内通过: `http://[运行电脑IP]:31346`
 
-### 方式二：命令行 (适用于请求模式)
+3. **使用步骤**:
+   - 在界面上选择下载模式（Mizuki或Otako）
+   - 输入股票代码和年份
+   - 设置下载目录
+   - 点击"开始下载"
 
-`Requests "Mizuki" Version` 的核心逻辑可以被命令行直接调用。
+### 📚 v1版本访问 (Legacy)
 
-#### 命令格式
+如需使用v1的独立版本，请进入`v1/`文件夹：
+
 ```bash
-python annual_report_downloader_rq.py [-h] (-s STOCK | -f FILE) -y YEARS [-d DIR]
+cd v1
+start_web_rq.bat    # Mizuki版本 (端口31015)
+start_web_bd.bat    # Otako版本 (端口30331)
 ```
 
-#### 参数详解
+### ⚙️ 模式选择指南
 
-| 参数          | 描述                                     | 必需     | 示例                                     |
-|---------------|------------------------------------------|----------|------------------------------------------|
-| `-s, --stock` | 单个股票代码                               | 与`-f`互斥 | `-s 000001`                              |
-| `-f, --file`  | 包含多个股票代码的文本文件路径（每行一个） | 与`-s`互斥 | `-f all_types_test_stocks.txt`           |
-| `-y, --years` | 年份，支持单年、范围、列表                 | **是**   | `-y 2024` 或 `-y 2022-2024` 或 `-y 2022,2024` |
-| `-d, --dir`   | 下载报告的存放目录（默认为`annual_reports`） | 否       | `-d ./my_reports`                        |
+#### 何时选择Mizuki Mode?
+- ✅ 个人电脑使用
+- ✅ 无企业安全软件限制  
+- ✅ 追求下载速度
+
+#### 何时选择Otako Mode?
+- ✅ 企业办公环境
+- ✅ 有安全软件（如绿盾、域之盾）
+- ✅ 需要避免文件加密问题
 
 ---
 
-## 项目结构
+## 📁 项目结构
 
 ```
 annual_report_crawler/
-├── 🚀 核心应用
-│   ├── annual_report_downloader_bd.py  # Browser "Otako" Version 核心逻辑
-│   ├── web_app_bd.py                   # Browser "Otako" Version Web应用
-│   ├── annual_report_downloader_rq.py  # Requests "Mizuki" Version 核心逻辑
-│   └── web_app_rq.py                   # Requests "Mizuki" Version Web应用
-├── 🏁 启动脚本
-│   ├── start_web_bd.bat                # "Otako" 版本 (浏览器) 启动器
-│   └── start_web_rq.bat                # "Mizuki" 版本 (请求) 启动器
-├── 🎨 网页模板
-│   └── templates/
-│       ├── index_bd.html               # "Otako" 版本界面
-│       └── index_rq.html               # "Mizuki" 版本界面
+├── 🔧 v2统一版本 (主要)
+│   ├── annual_report_downloader_hysilens.py  # 统一下载器
+│   ├── web_app_hysilens.py                   # 统一Web应用
+│   ├── start_web_hysilens.bat               # 启动脚本
+│   └── templates/index_hysilens.html         # 统一界面
+├── 📦 v1版本备份
+│   └── v1/                                   # Legacy版本文件夹
+│       ├── annual_report_downloader_rq.py    # Mizuki下载器
+│       ├── annual_report_downloader_bd.py    # Otako下载器
+│       ├── web_app_rq.py                     # Mizuki Web应用
+│       ├── web_app_bd.py                     # Otako Web应用
+│       ├── start_web_rq.bat                  # Mizuki启动脚本
+│       ├── start_web_bd.bat                  # Otako启动脚本
+│       └── chromedriver.exe                  # 独立浏览器驱动
 ├── 📄 文档与资源
-│   ├── README.md                       # 项目说明 (Markdown)
-│   ├── README.html                     # 项目说明 (网页版)
-│   └── all_types_test_stocks.txt       # 股票代码测试文件
+│   ├── README.md                             # v2项目说明
+│   ├── README.html                           # 网页版说明
+│   ├── README_Hysilens_v2.md                # 详细v2文档
+│   └── all_types_test_stocks.txt             # 测试股票代码
 └── 📂 下载目录 (自动生成)
     └── annual_reports/
 ```
 
----
+## 🆚 版本对比
 
-## 版本对比
+### v1 vs v2架构对比
 
-| 特性 | Requests "Mizuki" Version | Browser "Otako" Version |
+| 特性 | v1版本 | v2统一版本 |
+| :--- | :--- | :--- |
+| **界面数量** | 2个独立界面 | 1个统一界面 |
+| **代码维护** | 重复代码多 | 代码复用高 |
+| **模式切换** | 重启应用 | 界面实时切换 |
+| **端口管理** | 两个端口(30331, 31015) | 单一端口(31346) |
+| **扩展性** | 困难 | 易于扩展 |
+
+### 下载模式对比
+
+| 特性 | Mizuki Mode | Otako Mode |
 | :--- | :--- | :--- |
 | **核心技术** | HTTP Requests | Selenium Webdriver |
 | **下载速度** | 较快 | 常规 |
 | **企业环境兼容性** | 可能被拦截/加密 | **高** |
 | **资源占用** | 低 | 较高 |
-| **适用场景** | 个人电脑、服务器 | 有安全软件的公司电脑 |
+| **适用场景** | 个人电脑、服务器 | 企业办公环境 |
 
 ---
 
