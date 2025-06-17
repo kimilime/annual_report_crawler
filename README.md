@@ -133,64 +133,75 @@ A股的科创板、创业板以及港股的下载依赖于 [Selenium](https://ww
 ## 使用指南
 
 ### 🖥️ Web界面使用 (v2统一版本 - 推荐)
+v2版本在v1核心功能的基础上，提供了一个统一、易用的Web界面，是推荐的使用方式。
 
-**v2版本**提供了最简单直观的使用方式。
+1.  **启动服务**:
+    *   在项目根目录下，直接双击运行 `start_web_hysilens.bat`。
+    *   脚本会自动检查环境、安装依赖，并启动Web服务器。
+2.  **访问与使用**:
+    *   启动后，脚本会自动在浏览器中打开 `http://localhost:31346`。
+    *   在界面上选择模式、输入代码和年份，即可开始下载。
 
-1. **启动服务**:
-   - 在项目根目录下，直接双击运行 `start_web_hysilens.bat`。
-   - 脚本会自动检查环境、安装依赖，并启动Web服务器。
+### ⌨️ 命令行使用 (v1核心功能)
+v1的两种核心下载逻辑 (`downloader_rq.py` 和 `downloader_bd.py`) 均支持命令行调用，适合自动化和批量处理任务。
 
-2. **访问界面**:
-   - 脚本启动后，会自动在浏览器中打开 `http://localhost:31346`。
-   - 你也可以在局域网内通过 `http://[运行电脑IP]:31346` 访问。
+1.  **进入v1目录**:
+    ```bash
+    cd v1
+    ```
+2.  **选择模式并执行**:
+    *   **Mizuki模式 (请求)**:
+        ```bash
+        python annual_report_downloader_rq.py [参数]
+        ```
+    *   **Otako模式 (浏览器)**:
+        ```bash
+        python annual_report_downloader_bd.py [参数]
+        ```
+3.  **命令格式与参数 (两种模式通用)**:
+    ```bash
+    # 命令格式
+    python [downloader_script.py] [-h] (-s STOCK | -f FILE) -y YEARS [-d DIR]
+    ```
+    | 参数 | 描述 | 示例 |
+    | :--- | :--- | :--- |
+    | `-s, --stock` | 单个股票代码。 | `-s 000001` |
+    | `-f, --file` | 包含多个股票代码的文本文件路径（每行一个）。 | `-f ../all_types_test_stocks.txt` |
+    | `-y, --years` | **(必需)** 年份，支持单年(`2023`)、范围(`2021-2023`)。 | `-y 2021-2023` |
+    | `-d, --dir` | 下载目录 (默认为 `annual_reports`)。 | `-d ../my_reports` |
+    | `-h, --help` | 显示帮助信息。 | |
+4.  **使用示例**:
+    ```bash
+    # 使用Mizuki模式下载平安银行2023年年报
+    python annual_report_downloader_rq.py -s 000001 -y 2023
 
-3. **使用步骤**:
-   - **选择模式**: 根据你的网络环境选择 `Requests "Mizuki" Mode` 或 `Browser "Otako" Mode`。
-   - **输入代码**: 在文本框中输入股票代码，支持每行一个或用逗号分隔。
-   - **选择年份**: 输入需要下载的年份，多个年份用逗号分隔。
-   - **点击下载**: 点击"开始下载"按钮，即可在下方实时查看进度和日志。
-
-### ⚙️ 模式选择指南
-
-不知道如何选择下载模式？请参考下表：
-
-| 特性 | Mizuki Mode (请求模式) | Otako Mode (浏览器模式) |
-| :--- | :--- | :--- |
-| **核心技术** | HTTP Requests | Selenium Webdriver |
-| **下载速度** | ⚡ **快** | ⭐ 常规 |
-| **企业环境兼容性**| 较低 (可能被拦截) | ✅ **高** |
-| **适用场景** | 个人电脑、服务器 | 企业办公环境 |
-
-**一句话总结:** **个人用Mizuki，公司用Otako**。
-
-### 📚 v1版本访问 (Legacy)
-
-v1的两个独立版本已作为备份保留。如需使用，请进入`v1/`文件夹：
-
-```bash
-cd v1
-```
-- **Mizuki版本**: 运行 `start_web_rq.bat` (端口 `31015`)
-- **Otako版本**: 运行 `start_web_bd.bat` (端口 `30331`)
+    # 使用Otako模式批量下载文件中的所有股票2021至2023的年报
+    python annual_report_downloader_bd.py -f ../all_types_test_stocks.txt -y 2021-2023
+    ```
 
 ---
 
 ## 📁 项目结构
-
 ```
 annual_report_crawler/
-├── 📄 README.md                 # 项目说明文档
-├── 📄 README.html                # 网页版说明文档
-├── 🐍 annual_report_downloader_hysilens.py  # v2版核心下载逻辑
-├── 🌐 web_app_hysilens.py        # v2版Web应用
-├── 🚀 start_web_hysilens.bat    # v2版启动脚本
-├── 📁 templates/
-│   └── 📄 index_hysilens.html    # v2版前端页面
-├── 📦 v1/                        # v1旧版文件备份
-│   ├── ... (v1版本相关文件)
+├── 📄 README.md & README.html     # 项目说明文档
+│
+├── 📦 v2 - Web界面封装
+│   ├── 🚀 start_web_hysilens.bat    # v2启动脚本
+│   ├── 🌐 web_app_hysilens.py        # v2 Web应用 (Flask)
+│   └── 📁 templates/
+│       └── 📄 index_hysilens.html    # v2前端页面
+│
+├── 📦 v1 - 核心功能
+│   ├── 📁 v1/
+│   │   ├── 🐍 annual_report_downloader_rq.py  # Mizuki模式核心逻辑 (支持命令行)
+│   │   ├── 🐍 annual_report_downloader_bd.py  # Otako模式核心逻辑
+│   │   ├── 🌐 web_app_rq.py & web_app_bd.py  # v1的Web应用
+│   │   ├── 🚀 start_web_rq.bat & start_web_bd.bat # v1启动脚本
+│   │   └── ... (其他v1相关文件)
+│
 ├── ⚙️ chromedriver.exe            # 浏览器驱动
-├── 📋 requirements.txt           # Python依赖包
-└── 📂 annual_reports/           # (自动生成) 下载报告存放目录
+└── 📋 requirements.txt           # Python依赖包
 ```
 
 ## 🆚 版本对比
