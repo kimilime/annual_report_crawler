@@ -8,7 +8,7 @@ echo                   Developed by Terence WANG
 echo ================================================================
 echo.
 echo Unified Hysilens Version Features:
-echo    Integrates Requests Mizuki Mode and Browser Otako Mode
+echo    Integrates Requests Mizuki Mode and WebDriver Otako Mode
 echo    Smart selection of optimal download mode
 echo    Unified interface for all download modes
 echo    Complete support for A-shares, HK stocks, US stocks
@@ -69,7 +69,7 @@ echo Starting Web server...
 echo.
 echo Please visit in browser: http://localhost:31346
 echo Version: v2.0.0 Unified Hysilens Version
-echo Supports two modes: Requests Mizuki Mode and Browser Otako Mode
+echo Supports two modes: Requests Mizuki Mode and WebDriver Otako Mode
 echo Press Ctrl+C to stop server
 echo.
 echo ================================================================

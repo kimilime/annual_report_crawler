@@ -4,13 +4,13 @@
 
 这个文件夹包含了年报下载器的第一代版本，分为两个独立的版本：
 
-### 📊 Requests "Mizuki" Version
+### 🎴 Requests "Mizuki" Version
 - **文件**: `annual_report_downloader_rq.py`, `web_app_rq.py`
 - **启动**: `start_web_rq.bat`
 - **端口**: 31015
 - **特点**: 使用requests库，下载速度快
 
-### 🌐 Browser "Otako" Version  
+### 🪻 WebDriver "Otako" Version  
 - **文件**: `annual_report_downloader_bd.py`, `web_app_bd.py`
 - **启动**: `start_web_bd.bat`
 - **端口**: 30331

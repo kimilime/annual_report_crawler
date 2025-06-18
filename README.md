@@ -12,7 +12,7 @@
 
 ### 🔧 统一"Hysilens"版本优势
 
-**v2版本**整合了原有的Requests "Mizuki" Mode和Browser "Otako" Mode，提供：
+**v2版本**整合了原有的Requests "Mizuki" Mode和WebDriver "Otako" Mode，提供：
 
 - ✅ **统一界面**: 一个Web界面管理所有下载模式
 - ✅ **智能选择**: 根据使用环境选择最佳下载模式  
@@ -22,13 +22,13 @@
 
 ### 🎯 双模式支持
 
-#### 📊 Requests "Mizuki" Mode
+#### 🎴 Requests "Mizuki" Mode
 **适用场景**: 个人电脑环境，追求下载速度
 - ✅ 下载速度快，内存占用少
 - ✅ 无需浏览器依赖
 - ❌ 可能遇到文件加密问题
 
-#### 🌐 Browser "Otako" Mode
+#### 🪻 WebDriver "Otako" Mode
 **适用场景**: 企业办公环境，有安全软件限制
 - ✅ 避免文件加密问题
 - ✅ 兼容企业安全软件

@@ -60,7 +60,7 @@ def download_worker(stock_codes, years, download_dir='annual_reports'):
         
         # 显示版本信息
         log_message("================================================================")
-        log_message('Annual Report Crawler - Browser "Otako" Version')
+        log_message('Annual Report Crawler - WebDriver "Otako" Version')
         log_message("Developed by Terence WANG")
         log_message("================================================================")
         
@@ -134,7 +134,7 @@ def download_worker(stock_codes, years, download_dir='annual_reports'):
         
         # 显示结束版本信息
         log_message("================================================================")
-        log_message('Annual Report Crawler - Browser "Otako" Version')
+        log_message('Annual Report Crawler - WebDriver "Otako" Version')
         log_message("Developed by Terence WANG")
         log_message("================================================================")
         
@@ -267,13 +267,13 @@ def health_check():
 
 if __name__ == '__main__':
     print("================================================================")
-    print('Annual Report Crawler - Browser "Otako" Version')
+    print('Annual Report Crawler - WebDriver "Otako" Version')
     print("Developed by Terence WANG")
     print("================================================================")
     print("🌐 Web界面: http://localhost:30331")
-    print('🔧 版本: Browser "Otako" Version')
+    print('🔧 版本: WebDriver "Otako" Version')
     print("🚀 特性: 通过浏览器下载，避免文件加密")
-    print('💡 注意: Browser "Otako" Version使用端口30331，避免与Requests版本(31015)冲突')
+    print('💡 注意: WebDriver "Otako" Version使用端口30331，避免与Requests版本(31015)冲突')
     print("================================================================")
     
     app.run(debug=True, host='0.0.0.0', port=30331) 

@@ -350,13 +350,33 @@ class AnnualReportDownloader:
 
             try:
 
-                # 方法1: 使用当前目录下的ChromeDriver
+                # 方法1: 使用当前目录或上级目录下的ChromeDriver
 
-                local_chromedriver = Path("./chromedriver.exe")
+                local_chromedriver_paths = [
 
-                if local_chromedriver.exists():
+                    Path("./chromedriver.exe"),          # 当前目录
 
-                    print("  🔧 使用当前目录下的ChromeDriver...")
+                    Path("../chromedriver.exe"),         # 上级目录
+
+                ]
+
+                
+
+                local_chromedriver = None
+
+                for path in local_chromedriver_paths:
+
+                    if path.exists():
+
+                        local_chromedriver = path
+
+                        break
+
+                
+
+                if local_chromedriver:
+
+                    print(f"  🔧 使用ChromeDriver: {local_chromedriver}")
 
                     service = Service(str(local_chromedriver.absolute()))
 
@@ -2987,7 +3007,7 @@ class AnnualReportDownloader:
         print(f"\n📁 下载文件保存目录 {self.download_dir.absolute()}")
 
         print("================================================================")
-        print('Annual Report Crawler - Browser "Otako" Version')
+        print('Annual Report Crawler - WebDriver "Otako" Version')
         print("Developed by Terence WANG")
         print("================================================================")
         print()
@@ -3598,7 +3618,7 @@ def load_stock_codes_from_file(filepath: str) -> List[str]:
 def main():
     # 打印欢迎信息
     print("================================================================")
-    print('Annual Report Crawler - Browser "Otako" Version')
+    print('Annual Report Crawler - WebDriver "Otako" Version')
     print("Developed by Terence WANG")
     print("================================================================")
     

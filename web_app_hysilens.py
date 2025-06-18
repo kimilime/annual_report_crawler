@@ -4,7 +4,7 @@
 Annual Report Crawler - Unified "Hysilens" Version Web App
 年报下载器 - 统一"Hysilens"版本Web应用
 
-整合了Requests "Mizuki" Mode和Browser "Otako" Mode，
+整合了Requests "Mizuki" Mode和WebDriver "Otako" Mode，
 用户可以在界面上选择使用哪种下载模式。
 
 Developed by Terence WANG
@@ -58,7 +58,7 @@ def run_downloader_hysilens(stock_codes, years, download_dir, mode):
         download_status['mode'] = mode
         
         # 显示版本信息
-        mode_name = 'Requests "Mizuki" Mode' if mode == HysilensDownloadMode.MIZUKI else 'Browser "Otako" Mode'
+        mode_name = 'Requests "Mizuki" Mode' if mode == HysilensDownloadMode.MIZUKI else 'WebDriver "Otako" Mode'
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
             'message': '================================================================'
@@ -175,7 +175,7 @@ def run_downloader_hysilens(stock_codes, years, download_dir, mode):
         })
         
         # 显示结束版本信息
-        mode_name = 'Requests "Mizuki" Mode' if mode == HysilensDownloadMode.MIZUKI else 'Browser "Otako" Mode'
+        mode_name = 'Requests "Mizuki" Mode' if mode == HysilensDownloadMode.MIZUKI else 'WebDriver "Otako" Mode'
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
             'message': '================================================================'
@@ -285,7 +285,7 @@ if __name__ == '__main__':
     print("🌐 启动Web服务器...")
     print("📱 请在浏览器中访问: http://localhost:31346")
     print('🔧 版本: Unified "Hysilens" Version')
-    print('💡 支持两种模式: Requests "Mizuki" Mode & Browser "Otako" Mode')
+    print('💡 支持两种模式: Requests "Mizuki" Mode & WebDriver "Otako" Mode')
     print("🛑 按 Ctrl+C 停止服务器")
     print("================================================================")
     

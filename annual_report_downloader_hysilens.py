@@ -4,7 +4,7 @@
 Annual Report Crawler - Unified "Hysilens" Version
 年报下载器 - 统一"Hysilens"版本
 
-这个版本整合了Requests "Mizuki" Mode和Browser "Otako" Mode两种下载方式，
+这个版本整合了Requests "Mizuki" Mode和WebDriver "Otako" Mode两种下载方式，
 用户可以在界面上选择使用哪种模式。
 
 Developed by Terence WANG
@@ -21,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 class HysilensDownloadMode:
     """下载模式枚举"""
     MIZUKI = "mizuki"      # Requests模式
-    OTAKO = "otako"        # Browser模式
+    OTAKO = "otako"        # WebDriver模式
 
 class AnnualReportDownloaderHysilens:
     """统一的年报下载器，支持两种下载模式"""
@@ -81,7 +81,7 @@ class AnnualReportDownloaderHysilens:
         if self.mode == HysilensDownloadMode.MIZUKI:
             return 'Requests "Mizuki" Mode'
         elif self.mode == HysilensDownloadMode.OTAKO:
-            return 'Browser "Otako" Mode'
+            return 'WebDriver "Otako" Mode'
         else:
             return f'Unknown Mode ({self.mode})'
 
