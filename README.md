@@ -216,4 +216,13 @@ annual_report_crawler/
 
 ---
 
+## 📦 开源信息
+
+- **GitHub Repository**: https://github.com/kimilime/annual_report_crawler
+- **许可证**: Open Source
+- **贡献**: 欢迎提交Issues和Pull Requests
+- **Star**: 如果这个项目对您有帮助，请给我们一个⭐！
+
+---
+
 **Developed by Terence WANG**
