@@ -12,7 +12,7 @@
 
 ### 🔧 统一"Hysilens"版本优势
 
-**v2版本**整合了原有的Requests "Mizuki" Mode和WebDriver "Otako" Mode，提供：
+**v2版本**整合了原有的Requests "Hanae" Mode和WebDriver "Shio" Mode，提供：
 
 - ✅ **统一界面**: 一个Web界面管理所有下载模式
 - ✅ **智能选择**: 根据使用环境选择最佳下载模式  
@@ -22,13 +22,13 @@
 
 ### 🎯 双模式支持
 
-#### 🎴 Requests "Mizuki" Mode
+#### 🌸 Requests "Hanae" Mode
 **适用场景**: 个人电脑环境，追求下载速度
 - ✅ 下载速度快，内存占用少
 - ✅ 无需浏览器依赖
 - ❌ 可能遇到文件加密问题
 
-#### 🪻 WebDriver "Otako" Mode
+#### 🪸 WebDriver "Shio" Mode
 **适用场景**: 企业办公环境，有安全软件限制
 - ✅ 避免文件加密问题
 - ✅ 兼容企业安全软件
@@ -40,7 +40,7 @@
 start_web_hysilens.bat
 
 # 访问地址
-http://localhost:31346
+http://localhost:31425
 ```
 
 ## 核心功能
@@ -139,7 +139,7 @@ v2版本在v1核心功能的基础上，提供了一个统一、易用的Web界�
     *   在项目根目录下，直接双击运行 `start_web_hysilens.bat`。
     *   脚本会自动检查环境、安装依赖，并启动Web服务器。
 2.  **访问与使用**:
-    *   启动后，脚本会自动在浏览器中打开 `http://localhost:31346`。
+    *   启动后，脚本会自动在浏览器中打开 `http://localhost:31425`。
     *   在界面上选择模式、输入代码和年份，即可开始下载。
 
 ### ⌨️ 命令行使用 (v1核心功能)
@@ -150,11 +150,11 @@ v1的两种核心下载逻辑 (`downloader_rq.py` 和 `downloader_bd.py`) 均支
     cd v1
     ```
 2.  **选择模式并执行**:
-    *   **Mizuki模式 (请求)**:
+    *   **Hanae模式 (请求)**:
         ```bash
         python annual_report_downloader_rq.py [参数]
         ```
-    *   **Otako模式 (浏览器)**:
+    *   **Shio模式 (浏览器)**:
         ```bash
         python annual_report_downloader_bd.py [参数]
         ```
@@ -172,10 +172,10 @@ v1的两种核心下载逻辑 (`downloader_rq.py` 和 `downloader_bd.py`) 均支
     | `-h, --help` | 显示帮助信息。 | |
 4.  **使用示例**:
     ```bash
-    # 使用Mizuki模式下载平安银行2023年年报
+    # 使用Hanae模式下载平安银行2023年年报
     python annual_report_downloader_rq.py -s 000001 -y 2023
 
-    # 使用Otako模式批量下载文件中的所有股票2021至2023的年报
+    # 使用Shio模式批量下载文件中的所有股票2021至2023的年报
     python annual_report_downloader_bd.py -f ../all_types_test_stocks.txt -y 2021-2023
     ```
 
@@ -194,8 +194,8 @@ annual_report_crawler/
 │
 ├── 📦 v1 - 核心功能
 │   ├── 📁 v1/
-│   │   ├── 🐍 annual_report_downloader_rq.py  # Mizuki模式核心逻辑 (支持命令行)
-│   │   ├── 🐍 annual_report_downloader_bd.py  # Otako模式核心逻辑
+│   │   ├── 🐍 annual_report_downloader_rq.py  # Hanae模式核心逻辑 (支持命令行)
+│   │   ├── 🐍 annual_report_downloader_bd.py  # Shio模式核心逻辑
 │   │   ├── 🌐 web_app_rq.py & web_app_bd.py  # v1的Web应用
 │   │   ├── 🚀 start_web_rq.bat & start_web_bd.bat # v1启动脚本
 │   │   └── ... (其他v1相关文件)
@@ -208,10 +208,10 @@ annual_report_crawler/
 
 | 特性 | v1版本 (独立双版本) | v2统一版本 (Hysilens) |
 | :--- | :--- | :--- |
-| **界面数量** | 2个 (Mizuki, Otako) | ✅ **1个统一界面** |
+| **界面数量** | 2个 (Hanae, Shio) | ✅ **1个统一界面** |
 | **代码维护** | 重复代码多，维护困难 | ✅ **代码复用高，易于维护** |
 | **模式切换** | 需重启不同应用 | ✅ **界面实时切换，无需重启** |
-| **端口管理** | 2个端口 (30331, 31015) | ✅ **单一端口 (31346)** |
+| **端口管理** | 2个端口 (30605, 30820) | ✅ **单一端口 (31425)** |
 | **扩展性** | 困难 | ✅ **易于扩展新模式** |
 
 ---

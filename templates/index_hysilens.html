@@ -28,11 +28,37 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #e53935 0%, #7b1fa2 100%);
+            background: linear-gradient(135deg, #f8aea5 0%, #f5795d 100%);
             color: white;
             padding: 30px;
             text-align: center;
             position: relative;
+        }
+
+        .header h1, .header p {
+            text-shadow: 
+                1px 1px 3px rgba(0,0,0,0.4),
+                0px 0px 8px rgba(0,0,0,0.3);
+        }
+
+        .header .nav-link {
+            color: white !important;
+        }
+
+        .header .nav-link:visited {
+            color: white !important;
+        }
+
+        .header p .nav-link {
+            color: white !important;
+            text-decoration: underline;
+            font-weight: 600;
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .header p .nav-link:hover {
+            color: white !important;
+            text-decoration: none;
         }
 
 
@@ -41,18 +67,20 @@
             position: absolute;
             top: 20px;
             right: 30px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            background: rgba(255, 255, 255, 0.25);
+            color: white !important;
             padding: 8px 16px;
             border-radius: 20px;
             text-decoration: none;
             font-size: 14px;
             transition: background-color 0.3s;
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
         }
 
         .header .nav-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
+            background: rgba(255, 255, 255, 0.4);
+            color: white !important;
             text-decoration: none;
         }
 
@@ -103,30 +131,34 @@
             background: white;
         }
 
-        .mode-option[data-mode="mizuki"]:hover {
-            border-color: #e53935;
+        .mode-option[data-mode="hanae"]:hover {
+            border-color: #f8aea5;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.2);
+            box-shadow: 0 5px 15px rgba(248, 174, 165, 0.2);
         }
 
-        .mode-option[data-mode="otako"]:hover {
-            border-color: #7b1fa2;
+        .mode-option[data-mode="shio"]:hover {
+            border-color: #f5795d;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(123, 31, 162, 0.2);
+            box-shadow: 0 5px 15px rgba(245, 121, 93, 0.2);
         }
 
         .mode-option.selected {
-            border-color: #e53935;
+            border-color: #f8aea5;
         }
 
-        .mode-option[data-mode="mizuki"].selected {
-            background: rgba(229, 57, 53, 0.1);
-            border-color: #e53935;
+        .mode-option[data-mode="hanae"].selected {
+            background: rgba(248, 174, 165, 0.15);
+            border-color: #f8aea5;
+            border-width: 3px;
+            box-shadow: 0 4px 12px rgba(248, 174, 165, 0.3);
         }
 
-        .mode-option[data-mode="otako"].selected {
-            background: rgba(123, 31, 162, 0.1);
-            border-color: #7b1fa2;
+        .mode-option[data-mode="shio"].selected {
+            background: rgba(245, 121, 93, 0.15);
+            border-color: #f5795d;
+            border-width: 3px;
+            box-shadow: 0 4px 12px rgba(245, 121, 93, 0.3);
         }
 
         .mode-option .mode-title {
@@ -136,12 +168,22 @@
             color: #666;
         }
 
-        .mode-option[data-mode="mizuki"] .mode-title {
-            color: #e53935;
+        .mode-option[data-mode="hanae"] .mode-title {
+            color: #e8998a;
         }
 
-        .mode-option[data-mode="otako"] .mode-title {
-            color: #7b1fa2;
+        .mode-option[data-mode="hanae"].selected .mode-title {
+            color: #f8aea5;
+            font-weight: 700;
+        }
+
+        .mode-option[data-mode="shio"] .mode-title {
+            color: #e5694d;
+        }
+
+        .mode-option[data-mode="shio"].selected .mode-title {
+            color: #f5795d;
+            font-weight: 700;
         }
 
         .mode-option .mode-description {
@@ -179,7 +221,7 @@
 
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
-            border-color: #e53935;
+            border-color: #f8aea5;
         }
 
         .form-group textarea {
@@ -197,21 +239,24 @@
         }
 
         .btn {
-            background: linear-gradient(135deg, #e53935 0%, #7b1fa2 100%);
+            background: linear-gradient(135deg, #f8aea5 0%, #f5795d 100%);
             color: white;
             border: none;
             padding: 15px 30px;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             margin-right: 10px;
+            text-shadow: 
+                1px 1px 3px rgba(0,0,0,0.4),
+                0px 0px 8px rgba(0,0,0,0.3);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.4);
+            box-shadow: 0 5px 15px rgba(248, 174, 165, 0.3), 0 8px 25px rgba(245, 121, 93, 0.2);
         }
 
         .btn:disabled {
@@ -247,7 +292,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #e53935 0%, #7b1fa2 100%);
+            background: linear-gradient(135deg, #f8aea5 0%, #f5795d 100%);
             width: 0%;
             transition: width 0.3s;
         }
@@ -307,7 +352,7 @@
         }
 
         .help-section h3 {
-            color: #e53935;
+            color: #f5795d;
             margin-bottom: 15px;
         }
 
@@ -324,7 +369,7 @@
 
         .help-section li:before {
             content: "•";
-            color: #e53935;
+            color: #f5795d;
             position: absolute;
             left: 0;
         }
@@ -369,7 +414,8 @@
         <div class="header">
             <h1>📊 Annual Report Crawler</h1>
             <p>Developed by Terence WANG</p>
-            <p>🔧 v2.0.0 Unified "Hysilens" Version | <a href="/readme" target="_blank" style="color: rgba(255, 255, 255, 0.9); text-decoration: underline;">查看文档</a></p>
+            <p>🔧 v2.0.0 Unified "Hysilens" Version</p>
+            <p><a href="/readme" target="_blank" class="nav-link">📖 查看文档</a></p>
         </div>
 
         <div class="content">
@@ -378,14 +424,14 @@
             <div class="mode-selector">
                 <h3>⚙️ 选择下载模式</h3>
                 <div class="mode-options">
-                    <div class="mode-option selected" data-mode="mizuki">
-                        <div class="mode-title">🎴 Requests "Mizuki" Mode</div>
+                    <div class="mode-option selected" data-mode="hanae">
+                        <div class="mode-title">🌸 Requests "Hanae" Mode</div>
                         <div class="mode-description">
                             使用Python requests库的经典下载方式。下载速度快，内存占用少，适合无安全软件限制的环境。
                         </div>
                     </div>
-                    <div class="mode-option" data-mode="otako">
-                        <div class="mode-title">🪻 WebDriver "Otako" Mode</div>
+                    <div class="mode-option" data-mode="shio">
+                        <div class="mode-title">🪸 WebDriver "Shio" Mode</div>
                         <div class="mode-description">
                             通过浏览器下载，避免文件加密问题。适合企业环境，兼容各种安全软件，使用Chrome原生下载功能。
                         </div>
@@ -462,7 +508,7 @@
     <script>
         let statusInterval;
         let isDownloading = false;
-        let selectedMode = 'mizuki'; // 默认选择Mizuki模式
+                    let selectedMode = 'hanae'; // 默认选择Hanae模式
 
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {

@@ -4,7 +4,7 @@
 Annual Report Crawler - Unified "Hysilens" Version Web App
 年报下载器 - 统一"Hysilens"版本Web应用
 
-整合了Requests "Mizuki" Mode和WebDriver "Otako" Mode，
+整合了Requests "Hanae" Mode和WebDriver "Shio" Mode，
 用户可以在界面上选择使用哪种下载模式。
 
 Developed by Terence WANG
@@ -40,7 +40,7 @@ download_status = {
     'results': [],
     'logs': [],
     'download_dir': 'annual_reports',
-    'mode': HysilensDownloadMode.MIZUKI  # 默认使用Mizuki模式
+    'mode': HysilensDownloadMode.HANAE  # 默认使用Hanae模式
 }
 
 def run_downloader_hysilens(stock_codes, years, download_dir, mode):
@@ -58,7 +58,7 @@ def run_downloader_hysilens(stock_codes, years, download_dir, mode):
         download_status['mode'] = mode
         
         # 显示版本信息
-        mode_name = 'Requests "Mizuki" Mode' if mode == HysilensDownloadMode.MIZUKI else 'WebDriver "Otako" Mode'
+        mode_name = 'Requests "Hanae" Mode' if mode == HysilensDownloadMode.HANAE else 'WebDriver "Shio" Mode'
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
             'message': '================================================================'
@@ -175,7 +175,7 @@ def run_downloader_hysilens(stock_codes, years, download_dir, mode):
         })
         
         # 显示结束版本信息
-        mode_name = 'Requests "Mizuki" Mode' if mode == HysilensDownloadMode.MIZUKI else 'WebDriver "Otako" Mode'
+        mode_name = 'Requests "Hanae" Mode' if mode == HysilensDownloadMode.HANAE else 'WebDriver "Shio" Mode'
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
             'message': '================================================================'
@@ -226,13 +226,13 @@ def start_download():
     stock_codes = data.get('stock_codes', [])
     years = data.get('years', [])
     download_dir = data.get('download_dir', 'annual_reports')
-    mode = data.get('mode', HysilensDownloadMode.MIZUKI)
+    mode = data.get('mode', HysilensDownloadMode.HANAE)
     
     if not stock_codes or not years:
         return jsonify({'error': '请提供股票代码和年份'}), 400
     
     # 验证模式
-    if mode not in [HysilensDownloadMode.MIZUKI, HysilensDownloadMode.OTAKO]:
+    if mode not in [HysilensDownloadMode.HANAE, HysilensDownloadMode.SHIO]:
         return jsonify({'error': f'不支持的下载模式: {mode}'}), 400
     
     # 在后台线程中运行下载器
@@ -283,10 +283,10 @@ if __name__ == '__main__':
     print("Developed by Terence WANG")
     print("================================================================")
     print("🌐 启动Web服务器...")
-    print("📱 请在浏览器中访问: http://localhost:31346")
+    print("📱 请在浏览器中访问: http://localhost:31425")
     print('🔧 版本: Unified "Hysilens" Version')
-    print('💡 支持两种模式: Requests "Mizuki" Mode & WebDriver "Otako" Mode')
+    print('💡 支持两种模式: Requests "Hanae" Mode & WebDriver "Shio" Mode')
     print("🛑 按 Ctrl+C 停止服务器")
     print("================================================================")
     
-    app.run(debug=True, host='0.0.0.0', port=31346) 
+    app.run(debug=True, host='0.0.0.0', port=31425) 

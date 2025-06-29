@@ -4,7 +4,7 @@
 Annual Report Crawler - Unified "Hysilens" Version
 年报下载器 - 统一"Hysilens"版本
 
-这个版本整合了Requests "Mizuki" Mode和WebDriver "Otako" Mode两种下载方式，
+这个版本整合了Requests "Hanae" Mode和WebDriver "Shio" Mode两种下载方式，
 用户可以在界面上选择使用哪种模式。
 
 Developed by Terence WANG
@@ -20,29 +20,29 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 class HysilensDownloadMode:
     """下载模式枚举"""
-    MIZUKI = "mizuki"      # Requests模式
-    OTAKO = "otako"        # WebDriver模式
+    HANAE = "hanae"      # Requests模式
+    SHIO = "shio"        # WebDriver模式
 
 class AnnualReportDownloaderHysilens:
     """统一的年报下载器，支持两种下载模式"""
     
-    def __init__(self, download_dir: str = "annual_reports", mode: str = HysilensDownloadMode.MIZUKI):
+    def __init__(self, download_dir: str = "annual_reports", mode: str = HysilensDownloadMode.HANAE):
         """
         初始化下载器
         
         Args:
             download_dir: 下载目录
-            mode: 下载模式，'mizuki' 或 'otako'
+            mode: 下载模式，'hanae' 或 'shio'
         """
         self.download_dir = Path(download_dir)
         self.mode = mode
         self._downloader = None
         
         # 根据模式导入对应的下载器
-        if mode == HysilensDownloadMode.MIZUKI:
+        if mode == HysilensDownloadMode.HANAE:
             from v1.annual_report_downloader_rq import AnnualReportDownloader
             self._downloader = AnnualReportDownloader(download_dir)
-        elif mode == HysilensDownloadMode.OTAKO:
+        elif mode == HysilensDownloadMode.SHIO:
             from v1.annual_report_downloader_bd import AnnualReportDownloader
             self._downloader = AnnualReportDownloader(download_dir, headless=True)
         else:
@@ -78,10 +78,10 @@ class AnnualReportDownloaderHysilens:
     
     def get_mode_name(self) -> str:
         """获取当前模式的显示名称"""
-        if self.mode == HysilensDownloadMode.MIZUKI:
-            return 'Requests "Mizuki" Mode'
-        elif self.mode == HysilensDownloadMode.OTAKO:
-            return 'WebDriver "Otako" Mode'
+        if self.mode == HysilensDownloadMode.HANAE:
+            return 'Requests "Hanae" Mode'
+        elif self.mode == HysilensDownloadMode.SHIO:
+            return 'WebDriver "Shio" Mode'
         else:
             return f'Unknown Mode ({self.mode})'
 

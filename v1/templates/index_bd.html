@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annual Report Crawler - WebDriver "Otako" Version</title>
+    <title>Annual Report Crawler - WebDriver "Shio" Version</title>
     <style>
         * {
             margin: 0;
@@ -28,41 +28,51 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #c44569 0%, #8e44ad 100%);
+            background: #f5795d;
             color: white;
             padding: 30px;
             text-align: center;
             position: relative;
         }
 
+        .header h1, .header p {
+            text-shadow: 
+                1px 1px 3px rgba(0,0,0,0.4),
+                0px 0px 8px rgba(0,0,0,0.3);
+        }
+
         .header .badge {
             position: absolute;
             top: 20px;
             left: 30px;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             backdrop-filter: blur(10px);
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.3);
         }
 
         .header .nav-link {
             position: absolute;
             top: 20px;
             right: 30px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            background: rgba(255, 255, 255, 0.25);
+            color: white !important;
             padding: 8px 16px;
             border-radius: 20px;
             text-decoration: none;
             font-size: 14px;
             transition: background-color 0.3s;
+            text-shadow: 0px 1px 2px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
         }
 
         .header .nav-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            color: white;
+            background: rgba(255, 255, 255, 0.4);
+            color: white !important;
             text-decoration: none;
         }
 
@@ -143,7 +153,7 @@
 
         .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             outline: none;
-            border-color: #c44569;
+            border-color: #f5795d;
         }
 
         .form-group textarea {
@@ -161,21 +171,24 @@
         }
 
         .btn-wrapper .btn {
-            background: linear-gradient(135deg, #c44569 0%, #8e44ad 100%);
+            background: #f5795d;
             color: white;
             border: none;
             padding: 15px 30px;
             border-radius: 8px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
             margin-right: 10px;
+            text-shadow: 
+                1px 1px 3px rgba(0,0,0,0.4),
+                0px 0px 8px rgba(0,0,0,0.3);
         }
 
         .btn-wrapper .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(196, 69, 105, 0.4);
+            box-shadow: 0 5px 15px rgba(245, 121, 93, 0.4);
         }
 
         .btn-wrapper .btn:disabled {
@@ -211,7 +224,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(135deg, #c44569 0%, #8e44ad 100%);
+            background: #f5795d;
             width: 0%;
             transition: width 0.3s;
         }
@@ -314,7 +327,7 @@
         }
 
         .help-section h3 {
-            color: #87085f;
+            color: #f5795d;
             margin-bottom: 15px;
         }
 
@@ -331,7 +344,7 @@
 
         .help-section li:before {
             content: "•";
-            color: #87085f;
+            color: #f5795d;
             position: absolute;
             left: 0;
         }
@@ -363,7 +376,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="badge">🪻 WebDriver "Otako" Version</div>
+                            <div class="badge">🪸 WebDriver "Shio" Version</div>
             <a href="/readme" class="nav-link" target="_blank">📖 查看完整文档</a>
             <h1>📊 Annual Report Crawler</h1>
             <p>Developed by Terence WANG</p>
@@ -461,7 +474,7 @@
         </div>
 
         <div class="footer">
-            <p>&copy; 2025 Annual Report Crawler - WebDriver "Otako" Version</p>
+            <p>&copy; 2025 Annual Report Crawler - WebDriver "Shio" Version</p>
             <p>Developed by Terence WANG | 🌐 所有下载通过浏览器完成，避免文件加密</p>
             <p>📦 <a href="https://github.com/kimilime/annual_report_crawler" target="_blank" style="color: #666; text-decoration: none;">GitHub Repository</a> | ⭐ Star us on GitHub!</p>
         </div>

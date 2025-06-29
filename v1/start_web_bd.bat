@@ -1,6 +1,6 @@
 @echo off
 echo ================================================================
-echo   Annual Report Crawler - WebDriver "Otako" Version
+echo   Annual Report Crawler - WebDriver "Shio" Version
 echo ================================================================
 echo.
 
@@ -67,10 +67,10 @@ echo All dependencies checked
 echo.
 
 echo ================================================================
-echo Starting WebDriver "Otako" Version Web App...
+echo Starting WebDriver "Shio" Version Web App...
 echo ================================================================
-echo Web interface: http://localhost:30331
-echo Version: WebDriver "Otako" Version
+echo Web interface: http://localhost:30605
+echo Version: WebDriver "Shio" Version
 echo Feature: Download via browser to avoid file encryption
 echo Note: Downloads use headless browser mode
 echo Note: Uses port 30331 to avoid conflict with Requests version (31015)

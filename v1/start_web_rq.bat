@@ -1,6 +1,6 @@
 @echo off
 echo ================================================================
-echo   Annual Report Crawler - Requests "Mizuki" Version
+echo   Annual Report Crawler - Requests "Hanae" Version
 echo ================================================================
 echo.
 
@@ -58,10 +58,10 @@ echo All dependencies checked
 echo.
 
 echo ================================================================
-echo Starting Requests "Mizuki" Version Web App...
+echo Starting Requests "Hanae" Version Web App...
 echo ================================================================
-echo Web interface: http://localhost:31015
-echo Version: Requests "Mizuki" Version
+echo Web interface: http://localhost:30820
+echo Version: Requests "Hanae" Version
 echo Feature: Fast downloads using HTTP requests
 echo Note: Suitable for personal computers
 echo Note: Uses port 31015 to avoid conflict with Browser version (30331)

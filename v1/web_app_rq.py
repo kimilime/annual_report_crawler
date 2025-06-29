@@ -56,7 +56,7 @@ def run_downloader_direct(stock_codes, years, download_dir):
         })
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
-            'message': 'Annual Report Crawler - Requests "Mizuki" Version'
+            'message': 'Annual Report Crawler - Requests "Hanae" Version'
         })
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
@@ -161,7 +161,7 @@ def run_downloader_direct(stock_codes, years, download_dir):
         })
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
-            'message': 'Annual Report Crawler - Requests "Mizuki" Version'
+            'message': 'Annual Report Crawler - Requests "Hanae" Version'
         })
         download_status['logs'].append({
             'timestamp': datetime.now().strftime('%H:%M:%S'),
@@ -250,14 +250,14 @@ def readme():
 
 if __name__ == '__main__':
     print("================================================================")
-    print('Annual Report Crawler - Requests "Mizuki" Version')
+    print('Annual Report Crawler - Requests "Hanae" Version')
     print("Developed by Terence WANG")
     print("================================================================")
     print("🌐 启动Web服务器...")
-    print("📱 请在浏览器中访问: http://localhost:31015")
-    print('🔧 版本: Requests "Mizuki" Version')
-    print('💡 注意: Requests "Mizuki" Version使用端口31015，避免与Browser版本(30331)冲突')
+    print("📱 请在浏览器中访问: http://localhost:30820")
+    print('🔧 版本: Requests "Hanae" Version')
+    print('💡 注意: Requests "Hanae" Version使用端口30820，避免与Browser版本(30605)冲突')
     print("🛑 按 Ctrl+C 停止服务器")
     print("================================================================")
     
-    app.run(debug=True, host='0.0.0.0', port=31015) 
+    app.run(debug=True, host='0.0.0.0', port=30820) 
