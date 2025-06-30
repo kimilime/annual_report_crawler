@@ -28,11 +28,25 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #f8aea5 0%, #f5795d 100%);
+            background: linear-gradient(-45deg, #f5998e, #f19085, #f2967c, #f08a7b, #ef8373, #f5998e);
+            background-size: 200% 200%;
+            animation: gradientFlow 20s ease-in-out infinite;
             color: white;
             padding: 30px;
             text-align: center;
             position: relative;
+        }
+
+        @keyframes gradientFlow {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
         }
 
         .header h1, .header p {
@@ -124,7 +138,7 @@
             flex: 1;
             min-width: 300px;
             padding: 20px;
-            border: 2px solid #e1e5e9;
+            border: 3px solid #e1e5e9;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s;
@@ -150,14 +164,12 @@
         .mode-option[data-mode="hanae"].selected {
             background: rgba(248, 174, 165, 0.15);
             border-color: #f8aea5;
-            border-width: 3px;
             box-shadow: 0 4px 12px rgba(248, 174, 165, 0.3);
         }
 
         .mode-option[data-mode="shio"].selected {
             background: rgba(245, 121, 93, 0.15);
             border-color: #f5795d;
-            border-width: 3px;
             box-shadow: 0 4px 12px rgba(245, 121, 93, 0.3);
         }
 

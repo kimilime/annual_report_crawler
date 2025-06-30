@@ -50,7 +50,7 @@ if errorlevel 1 (
     pip install selenium
 )
 
-python -c "import beautifulsoup4" >nul 2>&1
+python -c "import bs4" >nul 2>&1
 if errorlevel 1 (
     echo Missing beautifulsoup4 package, installing...
     pip install beautifulsoup4
